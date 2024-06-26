@@ -59,7 +59,13 @@ const returnBike = async (rentalId: Types.ObjectId): Promise<TRental> => {
 	return rental;
 };
 
+const getAllRentalsForUser = async (userId: Types.ObjectId): Promise<TRental[]> => {
+	const rentals = await Rental.find({ userId });
+	return rentals;
+};
+
 export const RentalService = {
 	createRental,
-	returnBike
+	returnBike,
+	getAllRentalsForUser
 };

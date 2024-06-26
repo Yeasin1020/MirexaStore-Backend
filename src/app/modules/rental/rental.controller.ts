@@ -32,7 +32,22 @@ const returnBike = catchAsync(async (req: Request, res: Response) => {
 		data: rental,
 	});
 });
+
+const getAllRentalsForUser = catchAsync(async (req: Request, res: Response) => {
+	const userId = req.user._id; // Assuming req.user is set by the authentication middleware
+
+	const rentals = await RentalService.getAllRentalsForUser(userId);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: 'Rentals retrieved successfully',
+		data: rentals,
+	});
+});
+
 export const RentalController = {
 	createRental,
-	returnBike
+	returnBike,
+	getAllRentalsForUser
 };
