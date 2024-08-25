@@ -56,11 +56,14 @@ const returnBike = async (rentalId: Types.ObjectId): Promise<Partial<TRental>> =
 		await bike.save();
 	}
 
+
 	// Prepare the response data with only the necessary fields
+
 	const responseData = {
+
 		_id: rental._id,
 		userId: rental.userId,
-		bikeId: rental.bikeId._id, // Convert bikeId to a string ID
+		bikeId: rental.bikeId._id,
 		startTime: rental.startTime,
 		returnTime: rental.returnTime,
 		totalCost: rental.totalCost,

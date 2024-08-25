@@ -1,5 +1,4 @@
 import { Schema } from "mongoose";
-
 export type TRental = {
 	userId: Schema.Types.ObjectId;
 	bikeId: Schema.Types.ObjectId;
