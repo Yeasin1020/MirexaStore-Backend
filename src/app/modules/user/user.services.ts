@@ -1,12 +1,15 @@
 import { TUser } from "./user.interface";
-import User from "./user.model";
+import { User } from "./user.model";
 
-const createUsersIntoDB = async (payload: TUser) => {
-	const admin = await User.create(payload);
-	return admin
-}
 
+export const updateProfile = async (userId: string, updateData: Partial<TUser>) => {
+	const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true }).select('-password');
+	if (!updatedUser) {
+		throw new Error('User not found');
+	}
+	return updatedUser;
+};
 
 export const UserServices = {
-	createUsersIntoDB
+	updateProfile
 }

@@ -8,9 +8,7 @@ const rentalSchema = new Schema<TRental>({
 	returnTime: { type: Date, default: null },
 	totalCost: { type: Number, default: 0 },
 	isReturned: { type: Boolean, default: false },
-}, {
-	timestamps: true,
-});
+},);
 
 const Rental = model<TRental>('Rental', rentalSchema);
 

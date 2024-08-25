@@ -1,58 +1,66 @@
 
-import config from "../../config";
-import { TUser } from "../user/user.interface";
-import User from "../user/user.model";
-import { TLoginUser } from "./auth.interface";
-import { isPasswordMatched } from "./auth.util";
-import jwt from "jsonwebtoken"
 
+import httpStatus from 'http-status';
+
+import { TLoginUser } from './auth.interface';
+import jwt from 'jsonwebtoken';
+import config from '../../config';
+import AppError from '../../errors/AppError';
+import bcrypt from 'bcrypt';
+import { TUser } from '../user/user.interface';
+import { User } from '../user/user.model';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const signup = async (payload: TUser): Promise<any> => {
 	const user = await User.findOne({ email: payload.email });
+
 	if (user) {
-		throw new Error("User already exist");
+		throw new AppError(httpStatus.CONFLICT, 'User already exists');
 	}
 
 	const newUser = await User.create(payload);
-	return newUser
-}
-
+	return newUser;
+};
 
 const login = async (payload: TLoginUser) => {
-	const user = await User.findOne({ email: payload.email }).select("+password");
+	const user = await User.findOne({ email: payload.email }).select('+password');
 
 	if (!user) {
-		console.error('User not found');
-		throw new Error("User not found");
+		throw new AppError(httpStatus.CONFLICT, 'User not found');
 	}
 
-	const passwordMatch = await isPasswordMatched(payload.password, user.password);
+	const isPasswordMatched = async (
+		inputPassword: string,
+		hashedPassword: string,
+	): Promise<boolean> => {
+		const isMatched = await bcrypt.compare(inputPassword, hashedPassword);
+		return isMatched;
+	};
 
-	if (!passwordMatch) {
-		console.error('Password not matched');
-		throw new Error("Password not matched");
+	if (!(await isPasswordMatched(payload.password, user.password))) {
+		throw new AppError(httpStatus.UNAUTHORIZED, 'Password not matched');
 	}
 
 	const jwtPayload = {
-		_id: user._id,
 		email: user.email,
 		role: user.role,
 	};
-
 	const accessToken = jwt.sign(jwtPayload, config.jwt_access_secret as string, {
 		expiresIn: config.jwt_access_expires_in,
 	});
 
-	const refreshToken = jwt.sign(jwtPayload, config.jwt_refresh_secret as string, {
-		expiresIn: config.jwt_refresh_expires_in,
-	});
+	const refreshToken = jwt.sign(
+		jwtPayload,
+		config.jwt_access_secret as string,
+		{
+			expiresIn: config.jwt_access_expires_in,
+		},
+	);
 
-	const fullUser = await User.findById(user._id).select('-password');
 	return {
 		accessToken,
 		refreshToken,
-		user: fullUser
+		user,
 	};
 };
 

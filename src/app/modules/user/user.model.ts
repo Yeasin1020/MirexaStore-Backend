@@ -1,69 +1,56 @@
+
 import { Schema, model } from 'mongoose';
 import { TUser } from './user.interface';
-import bcryptjs from "bcryptjs";
+
 import config from '../../config';
+import { USER_ROLE } from './user.constants';
 
-// Define the type for Role
+// eslint-disable-next-line no-undef, @typescript-eslint/no-var-requires
+const bcrypt = require('bcrypt');
 
+const userSchema = new Schema<TUser>(
+	{
+		name: { type: String, required: true },
+		email: { type: String, required: true, unique: true },
+		password: { type: String, required: true, select: false },
+		phone: { type: String, required: true },
+		address: { type: String, required: true },
+		role: { type: String, required: true, enum: Object.keys(USER_ROLE) },
+	},
+	{
+		toJSON: {
+			transform(doc, ret) {
+				delete ret.password;
+				delete ret.__v;
 
-// Create a Mongoose schema for the User interface
-const userSchema = new Schema<TUser>({
-	name: {
-		type: String,
-		required: [true, 'Name is required'],
-		trim: true,
+				const orderedRet = {
+					_id: doc._id,
+					name: doc.name,
+					email: doc.email,
+					phone: doc.phone,
+					role: doc.role,
+					address: doc.address,
+				};
+				return orderedRet;
+			},
+		},
 	},
-	email: {
-		type: String,
-		required: [true, 'Email is required'],
-		unique: true,
-		lowercase: true,
-		trim: true,
-	},
-	password: {
-		type: String,
-		required: [true, 'Password is required'],
-		select: false
-	},
-	phone: {
-		type: String,
-		required: [true, 'Phone number is required'],
-		trim: true,
-	},
-	address: {
-		type: String,
-		required: [true, 'Address is required'],
-		trim: true,
-	},
-	role: {
-		type: String,
-		required: [true, 'Role is required'],
-		enum: ['admin', 'user'],
-	},
-	profile: {
-		type: Schema.Types.ObjectId,
-		ref: 'Profile' // Assuming a Profile model exists
-	}
-}, {
-	timestamps: true,
-	toJSON: {
-		transform(doc, ret) {
-			delete ret.password; // Remove password field from the response
-			return ret;
-		}
-	}
-});
+);
 
+//hashing password
 userSchema.pre('save', async function (next) {
 	// eslint-disable-next-line @typescript-eslint/no-this-alias
 	const user = this;
+	user.password = await bcrypt.hash(
+		user.password,
+		Number(config.bcrypt_salt_rounds),
+	);
+	next();
+});
 
-	user.password = await bcryptjs.hash(user.password, Number(config.bcrypt_salt_rounds))
+userSchema.post('save', async function (doc, next) {
+	doc.password = '';
+	next();
+});
 
-	next()
-})
-
-// Create and export the User model
-const User = model<TUser>('User', userSchema);
-
-export default User;
+export const User = model<TUser>('User', userSchema);

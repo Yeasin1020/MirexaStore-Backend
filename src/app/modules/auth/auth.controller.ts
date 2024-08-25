@@ -16,14 +16,13 @@ const signup = catchAsync(async (req, res) => {
 	});
 })
 const login = catchAsync(async (req, res) => {
-	const user = req.body
-	const { accessToken, refreshToken } = await AuthServices.login(req.body);
+	const { accessToken, refreshToken, user } = await AuthServices.login(req.body);
 
-
-	res.cookie("refreshToken", refreshToken, {
+	res.cookie('refreshToken', refreshToken, {
 		httpOnly: true,
-		secure: config.NODE_ENV === "production",
+		secure: config.NODE_ENV === 'production',
 	});
+
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		success: true,
@@ -31,7 +30,7 @@ const login = catchAsync(async (req, res) => {
 		token: accessToken,
 		data: user,
 	});
-})
+});
 
 export const AuthControllers = {
 	signup,

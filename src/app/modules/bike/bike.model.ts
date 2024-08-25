@@ -9,9 +9,7 @@ const bikeSchema = new Schema<TBike>({
 	year: { type: Number, required: true },
 	model: { type: String, required: true, trim: true },
 	brand: { type: String, required: true, trim: true },
-}, {
-	timestamps: true,
-});
+}, { timestamps: false });
 
 
 const Bike = model<TBike>('Bike', bikeSchema);

@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-import User from '../modules/user/user.model';
 import config from '../config';
+import { User } from '../modules/user/user.model';
 
 const authenticate = async (req: Request, res: Response, next: NextFunction) => {
 	try {

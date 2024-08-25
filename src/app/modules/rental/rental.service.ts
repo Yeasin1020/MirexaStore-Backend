@@ -30,7 +30,7 @@ const createRental = async (userId: Types.ObjectId, bikeId: Types.ObjectId, star
 };
 
 
-const returnBike = async (rentalId: Types.ObjectId): Promise<TRental> => {
+const returnBike = async (rentalId: Types.ObjectId): Promise<Partial<TRental>> => {
 	// Find the rental
 	const rental = await Rental.findById(rentalId).populate('bikeId');
 	if (!rental) {
@@ -39,7 +39,7 @@ const returnBike = async (rentalId: Types.ObjectId): Promise<TRental> => {
 
 	// Calculate the total cost based on the duration
 	const returnTime = new Date();
-	const durationHours = Math.ceil((returnTime.getTime() - new Date(rental.startTime).getTime()) / (1000 * 60 * 60));
+	const durationHours = Math.ceil((returnTime.getTime() - rental.startTime.getTime()) / (1000 * 60 * 60));
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const totalCost = durationHours * (rental.bikeId as any).pricePerHour;
 
@@ -56,7 +56,18 @@ const returnBike = async (rentalId: Types.ObjectId): Promise<TRental> => {
 		await bike.save();
 	}
 
-	return rental;
+	// Prepare the response data with only the necessary fields
+	const responseData = {
+		_id: rental._id,
+		userId: rental.userId,
+		bikeId: rental.bikeId._id, // Convert bikeId to a string ID
+		startTime: rental.startTime,
+		returnTime: rental.returnTime,
+		totalCost: rental.totalCost,
+		isReturned: rental.isReturned,
+	};
+
+	return responseData;
 };
 
 const getAllRentalsForUser = async (userId: Types.ObjectId): Promise<TRental[]> => {

@@ -1,15 +1,12 @@
 import express from 'express';
+
+import authenticate from '../../middlewares/authenticate';
 import { UserControllers } from './user.controller';
-import validateRequest from '../../middlewares/validateRequest';
-import createUsersValidationSchema from './user.validation';
 
 const router = express.Router();
 
-router.post(
-	'/signups',
-	validateRequest(createUsersValidationSchema),
-	UserControllers.createUsers
-);
+router.get('/me', authenticate, UserControllers.getProfile);
+router.put('/me', authenticate, UserControllers.updateUserProfile);
 
 
 export const UserRoutes = router;

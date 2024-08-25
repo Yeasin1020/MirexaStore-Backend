@@ -1,15 +1,10 @@
-import { Types } from "mongoose";
+import { USER_ROLE } from "./user.constants";
 
-
-export type TRole = 'admin' | 'user';
-
-export interface TUser {
+export type TUser = {
 	name: string;
 	email: string;
 	password: string;
 	phone: string;
 	address: string;
-	role: TRole;
-	profile?: Types.ObjectId;
-}
-
+	role: keyof typeof USER_ROLE;
+};

@@ -1,32 +1,19 @@
 import { z } from 'zod';
+import { USER_ROLE } from './user.constants';
 
-const createUsersValidationSchema = z.object({
+const UserValidationSchema = z.object({
 	body: z.object({
-		name: z.string({
-			required_error: 'Name is required',
-		}).trim(),
-
-		email: z.string({
-			required_error: 'Email is required',
-		}).email().trim().toLowerCase(),
-
-		password: z.string({
-			required_error: 'Password is required',
+		name: z.string().min(1, { message: 'Name is required' }).trim(),
+		email: z.string().email({ message: 'Invalid email address' }).trim(),
+		password: z.string().min(1, { message: 'Password is required' }).trim(),
+		phone: z.string().min(1, { message: 'Phone number is required' }).trim(),
+		address: z.string().min(1, { message: 'Address is required' }).trim(),
+		role: z.nativeEnum(USER_ROLE, {
+			message: "Role must be either 'admin' or 'user'",
 		}),
-
-		phone: z.string({
-			required_error: 'Phone number is required',
-		}).trim(),
-
-		address: z.string({
-			required_error: 'Address is required',
-		}).trim(),
-
-		role: z.enum(['admin', 'user'], {
-			required_error: 'Role is required',
-		}),
-	})
+	}),
 });
 
-export default createUsersValidationSchema;
-
+export const UserValidation = {
+	UserValidationSchema,
+};
