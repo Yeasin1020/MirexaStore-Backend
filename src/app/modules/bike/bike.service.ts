@@ -23,16 +23,19 @@ const updateBikeIntoDb = async (id: string, updateData: Partial<TBike>) => {
 	return updatedBike;
 };
 
-export const deleteBikeFromDb = async (id: string) => {
+const deleteBikeFromDb = async (id: string) => {
+
 	if (!Types.ObjectId.isValid(id)) {
 		throw new Error('Invalid bike ID');
 	}
 
 	const bike = await Bike.findByIdAndDelete(id);
+
 	if (!bike) {
 		throw new Error('Bike not found');
 	}
-}
+	return bike;
+};
 export const BikeService = {
 	createBikeIntoDb,
 	getAllBikesFromDb,

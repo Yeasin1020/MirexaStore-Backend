@@ -39,8 +39,9 @@ const updateBike = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
-export const deleteBike = catchAsync(async (req: Request, res: Response) => {
+const deleteBike = catchAsync(async (req: Request, res: Response) => {
 	const { id } = req.params;
+
 	const bike = await BikeService.deleteBikeFromDb(id);
 
 	sendResponse(res, {
