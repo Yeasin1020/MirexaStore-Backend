@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { UserRoutes } from "../modules/user/user.route";
 import { AuthRoutes } from "../modules/auth/auth.route";
-import { BikeRoutes } from "../modules/bike/bike.route";
-import { RentalRoutes } from "../modules/rental/rental.route";
+import { ProductRoutes } from "../modules/product/product.route";
+import { AddToCartRoutes } from "../modules/rental/addToCart.route";
 
 const router = Router();
 
@@ -16,12 +16,12 @@ const moduleRoutes = [
     route: AuthRoutes,
   },
   {
-    path: "/bikes",
-    route: BikeRoutes
+    path: "/product",
+    route: ProductRoutes,
   },
   {
-    path: "/rentals",
-    route: RentalRoutes
+    path: "/cart",
+    route: AddToCartRoutes,
   },
 
 
