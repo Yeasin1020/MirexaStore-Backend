@@ -16,6 +16,7 @@ const userSchema = new Schema<TUser>(
 		phone: { type: String, required: true },
 		address: { type: String, required: true },
 		role: { type: String, required: true, enum: Object.keys(USER_ROLE) },
+		googleId: { type: String, unique: true },
 	},
 	{
 		toJSON: {

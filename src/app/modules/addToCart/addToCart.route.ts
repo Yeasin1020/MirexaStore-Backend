@@ -10,10 +10,7 @@ router.post('/', authenticate, AddToCartController.addProductToCart);
 router.put('/:id', authenticate, AddToCartController.updateProductInCart);
 
 // Route to remove product from cart
-router.delete('/:id', (req, res, next) => {
-	console.log("Route Params: ", req.params); // Log the full params object
-	next();
-}, AddToCartController.removeProductFromCart);
+router.delete('/:id', authenticate, AddToCartController.removeProductFromCart);
 
 
 // Route to get all products in the user's cart

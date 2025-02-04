@@ -14,6 +14,20 @@ const getAllProductsFromDb = async () => {
 	return await Product.find(); // Retrieve all products from the database
 };
 
+const getProductById = async (id: string) => {
+	if (!Types.ObjectId.isValid(id)) {
+		throw new Error("Invalid product ID");
+	}
+
+	const product = await Product.findById(id).lean().exec();
+
+	if (!product) {
+		throw new Error("Product not found");
+	}
+
+	return product;
+};
+
 const updateProductIntoDb = async (id: string, updateData: Partial<TProduct>) => {
 	const updatedProduct = await Product.findByIdAndUpdate(id, updateData, { new: true }).lean().exec();
 	if (!updatedProduct) {
@@ -38,6 +52,7 @@ const deleteProductFromDb = async (id: string) => {
 export const ProductService = {
 	createProductIntoDb,
 	getAllProductsFromDb,
+	getProductById,
 	updateProductIntoDb,
 	deleteProductFromDb,
 };

@@ -5,8 +5,16 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import mongoose from "mongoose";
 
+// Validate if a string is a valid ObjectId
+const isValidObjectId = (id: string) => mongoose.Types.ObjectId.isValid(id);
+
+// Add product to cart
 const addProductToCart = catchAsync(async (req: Request, res: Response) => {
 	const { userId, productId, quantity } = req.body;
+
+	if (!isValidObjectId(userId) || !isValidObjectId(productId)) {
+		return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid userId or productId" });
+	}
 
 	const cartItem = await AddToCartService.addProductToCart(userId, productId, quantity);
 
@@ -18,18 +26,15 @@ const addProductToCart = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+// Update product in cart
 const updateProductInCart = catchAsync(async (req: Request, res: Response) => {
-	const { id: cartItemId } = req.params; // Correctly extract ID from params
+	const { id: cartItemId } = req.params;
 	const { quantity } = req.body;
 
-	if (!cartItemId) {
-		throw new Error("Cart Item ID is missing in the URL");
+	if (!cartItemId || !isValidObjectId(cartItemId)) {
+		return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid Cart Item ID" });
 	}
 
-	console.log("Cart Item ID from URL:", cartItemId);
-	console.log("Quantity from Body:", quantity);
-
-	// Update the cart item using the service
 	const updatedCartItem = await AddToCartService.updateProductInCart(cartItemId, quantity);
 
 	sendResponse(res, {
@@ -40,12 +45,13 @@ const updateProductInCart = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
-
-
+// Remove product from cart
 const removeProductFromCart = catchAsync(async (req: Request, res: Response) => {
-	const cartItemId = req.params.id; // Access the 'id' parameter from the URL
+	const { id: cartItemId } = req.params;
 
-	console.log("Received cartItemId: ", cartItemId); // Log the received ID to ensure it's being captured
+	if (!cartItemId || !isValidObjectId(cartItemId)) {
+		return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid Cart Item ID" });
+	}
 
 	const removedCartItem = await AddToCartService.removeProductFromCart(cartItemId);
 
@@ -57,9 +63,13 @@ const removeProductFromCart = catchAsync(async (req: Request, res: Response) => 
 	});
 });
 
-
+// Get all products in cart
 const getAllProductsInCart = catchAsync(async (req: Request, res: Response) => {
 	const { userId } = req.params;
+
+	if (!isValidObjectId(userId)) {
+		return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid userId" });
+	}
 
 	const cartItems = await AddToCartService.getAllProductsInCart(userId);
 
@@ -71,8 +81,13 @@ const getAllProductsInCart = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+// Purchase product in cart
 const purchaseProductInCart = catchAsync(async (req: Request, res: Response) => {
 	const { cartItemId } = req.params;
+
+	if (!cartItemId || !isValidObjectId(cartItemId)) {
+		return res.status(httpStatus.BAD_REQUEST).json({ message: "Invalid Cart Item ID" });
+	}
 
 	const purchasedCartItem = await AddToCartService.purchaseProductInCart(cartItemId);
 

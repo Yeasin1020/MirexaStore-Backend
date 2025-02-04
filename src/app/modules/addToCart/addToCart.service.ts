@@ -52,6 +52,7 @@ const updateProductInCart = async (cartItemId: Types.ObjectId, quantity: number)
 		throw new Error("Cart item not found");
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const product = cartItem.productId as any;
 
 	// Calculate stock adjustment
@@ -99,7 +100,6 @@ const removeProductFromCart = async (cartItemId: string) => {
 
 	return cartItem;
 };
-
 
 // Get all products in the cart for a user
 const getAllProductsInCart = async (userId: Types.ObjectId) => {

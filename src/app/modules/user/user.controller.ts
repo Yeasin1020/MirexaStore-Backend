@@ -1,35 +1,51 @@
 import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
-import sendResponse from "../../utils/sendResponse";
 import { UserServices } from "./user.services";
-
+import sendResponse from "../../utils/sendResponse";
 
 const getProfile = catchAsync(async (req, res) => {
-	const user = req.user;
-
+	const user = await UserServices.getProfile(req.user._id);
+	if (!user) {
+		return res.status(404).json({ message: "User not found" });
+	}
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		success: true,
-		message: 'User profile retrieved successfully',
+		message: "User profile retrieved successfully",
 		data: user,
 	});
 });
 
-
-const updateUserProfile = catchAsync(async (req, res) => {
-	const userId = req.user.id; // Extract user ID from the authenticated user
-	const updatedUser = await UserServices.updateProfile(userId, req.body);
-
+const getAllUsers = catchAsync(async (req, res) => {
+	const users = await UserServices.getAllUsers();
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		success: true,
-		message: 'Profile updated successfully',
+		message: "All users retrieved successfully",
+		data: users,
+	});
+});
+
+const deleteUser = catchAsync(async (req, res) => {
+	const { id } = req.params;
+	await UserServices.deleteUser(id);
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "User deleted successfully",
+		data: undefined
+	});
+});
+
+const makeAdmin = catchAsync(async (req, res) => {
+	const { id } = req.params;
+	const updatedUser = await UserServices.makeAdmin(id);
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "User role updated to admin",
 		data: updatedUser,
 	});
 });
 
-
-export const UserControllers = {
-	getProfile,
-	updateUserProfile
-};
+export const UserControllers = { getAllUsers, deleteUser, makeAdmin, getProfile };
