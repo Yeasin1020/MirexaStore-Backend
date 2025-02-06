@@ -1,14 +1,5 @@
 import { Schema, model } from 'mongoose';
-
-// Define the interface for a Product
-export interface TProduct {
-	name: string;
-	description: string;
-	price: number;
-	stockQuantity: number;
-	category: string;
-	productImages: string[];
-}
+import { TProduct } from './product.interface'; // Assuming the interface is in a separate file
 
 // Validation function for product images (URL validation)
 function arrayOfValidUrls(value: string[]): boolean {
@@ -28,6 +19,7 @@ const productSchema = new Schema<TProduct>(
 			required: true,  // This field is required
 			validate: [arrayOfValidUrls, 'Please provide valid URLs for images'],  // Validation to ensure valid URLs
 		},
+		reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],  // Array of ObjectId references to Review model
 	},
 	{ timestamps: true }  // Add timestamps for createdAt and updatedAt
 );

@@ -49,10 +49,21 @@ const deleteProductFromDb = async (id: string) => {
 	return product;
 };
 
+
+const getRelatedProducts = async (category: string, excludeId: string) => {
+	const relatedProducts = await Product.find({
+		category: category,
+		_id: { $ne: excludeId }, // Exclude the current product
+	}).limit(5); // Limit the number of related products to 5 (or any desired number)
+
+	return relatedProducts;
+};
+
 export const ProductService = {
 	createProductIntoDb,
 	getAllProductsFromDb,
 	getProductById,
 	updateProductIntoDb,
 	deleteProductFromDb,
+	getRelatedProducts
 };

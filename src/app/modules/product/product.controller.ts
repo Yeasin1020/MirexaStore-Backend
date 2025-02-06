@@ -65,10 +65,25 @@ const deleteProduct = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const getRelatedProducts = catchAsync(async (req: Request, res: Response) => {
+	const { id } = req.params; // Get the product ID from request parameters
+	const product = await ProductService.getProductById(id); // Fetch the product to get its category
+	const relatedProducts = await ProductService.getRelatedProducts(product.category, id); // Get related products
+
+	console.log(relatedProducts);
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: 'Related products retrieved successfully',
+		data: relatedProducts,
+	});
+});
+
 export const ProductController = {
 	createProduct,
 	getAllProducts,
 	getProductById,
 	updateProduct,
 	deleteProduct,
+	getRelatedProducts
 };

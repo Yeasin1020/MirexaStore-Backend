@@ -16,6 +16,21 @@ const getProfile = catchAsync(async (req, res) => {
 	});
 });
 
+const getUserById = catchAsync(async (req, res) => {
+	const { id } = req.params;
+	const user = await UserServices.getProfile(id); // You can reuse the getProfile service function to get a user by ID
+	if (!user) {
+		return res.status(404).json({ message: "User not found" });
+	}
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "User retrieved successfully",
+		data: user,
+	});
+});
+
+
 const getAllUsers = catchAsync(async (req, res) => {
 	const users = await UserServices.getAllUsers();
 	sendResponse(res, {
@@ -48,4 +63,4 @@ const makeAdmin = catchAsync(async (req, res) => {
 	});
 });
 
-export const UserControllers = { getAllUsers, deleteUser, makeAdmin, getProfile };
+export const UserControllers = { getAllUsers, deleteUser, makeAdmin, getProfile, getUserById };

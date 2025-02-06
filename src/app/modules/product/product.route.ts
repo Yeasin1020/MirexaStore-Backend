@@ -10,5 +10,6 @@ router.get('/', ProductController.getAllProducts);
 router.get('/:id', ProductController.getProductById);
 router.put('/:id', authenticate, ProductController.updateProduct);
 router.delete('/:id', authenticate, ProductController.deleteProduct);
+router.get('/:id/related', ProductController.getRelatedProducts);
 
 export const ProductRoutes = router;
