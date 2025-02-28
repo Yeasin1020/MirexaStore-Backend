@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 import Review from './review.model';
 import Product from '../product/product.model';
-import { TReview } from './review.interface';
+import { TReply, TReview } from './review.interface';
 
 
 const createReview = async (reviewData: TReview) => {
@@ -137,8 +137,13 @@ const deleteReview = async (reviewId: string, userId: string) => {
 	return review;
 };
 
-// Edit a reply
+// // Edit a reply
 const editReply = async (reviewId: string, replyId: string, userId: string, updatedComment: string) => {
+	console.log('Review ID:', reviewId);
+	console.log('Reply ID:', replyId);
+	console.log('User ID:', userId);
+	console.log('Updated Comment:', updatedComment);
+
 	if (!Types.ObjectId.isValid(reviewId) || !Types.ObjectId.isValid(replyId) || !Types.ObjectId.isValid(userId)) {
 		throw new Error("Invalid review, reply, or user ID");
 	}
@@ -151,7 +156,6 @@ const editReply = async (reviewId: string, replyId: string, userId: string, upda
 		throw new Error("Review not found");
 	}
 
-	// Find the reply by matching the replyId
 	const replyIndex = review.replies.findIndex((reply) => reply._id.toString() === replyObjectId.toString());
 	if (replyIndex === -1) {
 		throw new Error("Reply not found");
@@ -159,8 +163,8 @@ const editReply = async (reviewId: string, replyId: string, userId: string, upda
 
 	const reply = review.replies[replyIndex];
 
-	// Ensure the logged-in user is the one who posted the reply
-	if (reply.userId.toString() !== userId) {
+	// Use .equals() to compare ObjectIds
+	if (!reply.userId.equals(userId)) {
 		throw new Error("You are not authorized to edit this reply");
 	}
 
@@ -172,11 +176,10 @@ const editReply = async (reviewId: string, replyId: string, userId: string, upda
 	return review;
 };
 
+
 // Delete a reply
 const deleteReply = async (reviewId: string, replyId: string, userId: string) => {
-	if (!Types.ObjectId.isValid(reviewId) || !Types.ObjectId.isValid(replyId) || !Types.ObjectId.isValid(userId)) {
-		throw new Error("Invalid review, reply, or user ID");
-	}
+
 
 	const reviewObjectId = new Types.ObjectId(reviewId);
 	const replyObjectId = new Types.ObjectId(replyId);
@@ -186,7 +189,7 @@ const deleteReply = async (reviewId: string, replyId: string, userId: string) =>
 		throw new Error("Review not found");
 	}
 
-	// Check if the reply exists in the replies array
+	// Find the reply
 	const replyIndex = review.replies.findIndex((r) => r._id.toString() === replyObjectId.toString());
 	if (replyIndex === -1) {
 		throw new Error("Reply not found");
@@ -194,16 +197,16 @@ const deleteReply = async (reviewId: string, replyId: string, userId: string) =>
 
 	const reply = review.replies[replyIndex];
 
-	// Ensure the logged-in user is the one who posted the reply
-	if (reply.userId.toString() !== userId) {
+
+	// Fix: Convert ObjectId to String before comparing
+	if (reply.userId.toString() !== userId.toString()) {
 		throw new Error("You are not authorized to delete this reply");
 	}
 
-	// Manually remove the reply from the replies array by filtering it out
-	review.replies = review.replies.filter((r) => r._id.toString() !== replyObjectId.toString());
+	// Remove reply from array
+	review.replies.splice(replyIndex, 1);
 
 	await review.save();
-
 	return review;
 };
 

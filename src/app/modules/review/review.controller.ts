@@ -126,6 +126,11 @@ const editReply = catchAsync(async (req: Request, res: Response) => {
 	const userId = req.user._id;
 	const { updatedComment } = req.body;
 
+	console.log('Received reviewId:', reviewId);
+	console.log('Received replyId:', replyId);
+	console.log('User ID from token:', userId);
+	console.log('Updated comment from request body:', updatedComment);
+
 	// Ensure updatedComment exists in the request body
 	if (!updatedComment) {
 		throw new Error("Updated comment is required");
@@ -142,10 +147,16 @@ const editReply = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+
 // Delete a reply
 const deleteReply = catchAsync(async (req: Request, res: Response) => {
 	const { reviewId, replyId } = req.params;
-	const userId = req.user._id;
+	const userId = req.user?._id;
+
+
+	if (!userId) {
+		throw new Error("User ID not found in request");
+	}
 
 	// Call the service to delete the reply
 	const updatedReview = await ReviewService.deleteReply(reviewId, replyId, userId);
@@ -167,5 +178,5 @@ export const ReviewController = {
 	editReview,
 	deleteReview,
 	editReply,
-	deleteReply,
+	deleteReply
 };

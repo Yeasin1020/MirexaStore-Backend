@@ -70,7 +70,6 @@ const getRelatedProducts = catchAsync(async (req: Request, res: Response) => {
 	const product = await ProductService.getProductById(id); // Fetch the product to get its category
 	const relatedProducts = await ProductService.getRelatedProducts(product.category, id); // Get related products
 
-	console.log(relatedProducts);
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		success: true,

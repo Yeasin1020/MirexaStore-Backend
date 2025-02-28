@@ -1,11 +1,12 @@
 import { Document, Types } from 'mongoose';
 
 export interface TReply {
-	_id?: Types.ObjectId;  // Make _id optional
+	_id?: Types.ObjectId | undefined;  // Make _id optional
 	userId: Types.ObjectId;
 	comment: string;
 	userName: string;
 	timestamp: Date;
+
 }
 export interface TReview extends Document {
 	_id: Types.ObjectId;

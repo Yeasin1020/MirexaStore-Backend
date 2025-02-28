@@ -2,7 +2,6 @@ import { Router } from "express";
 import { UserRoutes } from "../modules/user/user.route";
 import { AuthRoutes } from "../modules/auth/auth.route";
 import { ProductRoutes } from "../modules/product/product.route";
-import { AddToCartRoutes } from "../modules/addToCart/addToCart.route";
 import { CheckoutRoutes } from "../modules/checkout/checkout.route";
 import { ReviewRoutes } from "../modules/review/review.route";
 
@@ -21,10 +20,10 @@ const moduleRoutes = [
     path: "/product",
     route: ProductRoutes,
   },
-  {
-    path: "/cart",
-    route: AddToCartRoutes,
-  },
+  // {
+  //   path: "/cart",
+  //   route: AddToCartRoutes,
+  // },
   {
     path: "/checkout",
     route: CheckoutRoutes,
