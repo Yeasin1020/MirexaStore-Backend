@@ -37,7 +37,22 @@ const getProductById = catchAsync(async (req: Request, res: Response) => {
 		data: product,
 	});
 });
+// const getSearchSuggestions = async (req: Request, res: Response) => {
+// 	try {
+// 		const { query } = req.query;
 
+// 		if (!query || typeof query !== "string" || query.trim().length === 0) {
+// 			return res.status(400).json({ message: "Query parameter is required and should be a non-empty string." });
+// 		}
+
+// 		const suggestions = await ProductService.getSearchSuggestionsService(query);
+
+// 		res.status(200).json(suggestions);
+// 	} catch (error) {
+// 		console.error(error); // This will help you debug if there's an issue
+// 		res.status(500).json({ message: "Failed to get suggestions", error });
+// 	}
+// };
 
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
 	const productId = req.params.id;

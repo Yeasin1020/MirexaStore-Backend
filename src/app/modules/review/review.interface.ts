@@ -12,6 +12,7 @@ export interface TReview extends Document {
 	_id: Types.ObjectId;
 	productId: Types.ObjectId;
 	userId: Types.ObjectId;
+	userName: string;
 	rating: number;
 	comment: string;
 	likes: Types.ObjectId[];  // Array of User ObjectIds who liked the review

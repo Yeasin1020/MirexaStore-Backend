@@ -5,6 +5,7 @@ import authenticate from "../../middlewares/authenticate";
 const router = express.Router();
 
 router.post('/create', authenticate, ReviewController.createReview);  // Add review
+router.get('/all', ReviewController.getAllReviewsFromDb);
 router.get('/:productId', ReviewController.getReviewsByProductId);  // Get reviews by product ID
 router.post('/like/:reviewId', authenticate, ReviewController.likeReview);  // Like a review
 router.post('/reply/:reviewId', authenticate, ReviewController.replyToReview);  // Reply to review

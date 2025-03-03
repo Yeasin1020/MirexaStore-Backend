@@ -27,6 +27,18 @@ const getProductById = async (id: string) => {
 
 	return product;
 };
+// const getSearchSuggestionsService = async (query: string) => {
+// 	const regex = new RegExp(query, "i"); // Case-insensitive match
+
+// 	const suggestions = await Product.find(
+// 		{ name: regex }, // ধরে নিচ্ছি আপনার প্রোডাক্টের নাম `name`
+// 		"name" // শুধু নাম return করবো suggestion হিসেবে
+// 	)
+// 		.limit(10)
+// 		.lean();
+
+// 	return suggestions;
+// };
 
 const updateProductIntoDb = async (id: string, updateData: Partial<TProduct>) => {
 	const updatedProduct = await Product.findByIdAndUpdate(id, updateData, { new: true }).lean().exec();

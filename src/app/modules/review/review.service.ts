@@ -19,6 +19,28 @@ const createReview = async (reviewData: TReview) => {
 	return newReview;
 };
 
+const getAllReviews = async (page: number, limit: number) => {
+	const skip = (page - 1) * limit;  // Calculate the skip value for pagination
+
+	// Get total count of reviews
+	const totalReviews = await Review.countDocuments();
+
+	// Find the reviews for the given page and limit
+	const reviews = await Review.find()
+		.skip(skip)                    // Skip the previous pages' reviews
+		.limit(limit)                  // Limit to the number of reviews per page
+		.populate('userId', 'name');    // Populate user details (you can add more fields)
+
+	// Calculate total pages based on total reviews and reviews per page
+	const totalPages = Math.ceil(totalReviews / limit);
+
+	return {
+		reviews,         // Reviews for the current page
+		totalReviews,    // Total number of reviews in the database
+		totalPages,      // Total number of pages
+	};
+};
+
 
 
 // Get reviews by product ID
@@ -213,6 +235,7 @@ const deleteReply = async (reviewId: string, replyId: string, userId: string) =>
 
 export const ReviewService = {
 	createReview,
+	getAllReviews,
 	getReviewsByProductId,
 	likeReview,
 	replyToReview,

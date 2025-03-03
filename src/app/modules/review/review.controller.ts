@@ -7,13 +7,14 @@ import Product from '../product/product.model';
 import Review from './review.model';
 
 const createReview = catchAsync(async (req: Request, res: Response) => {
-	const { productId, rating, comment } = req.body;
+	const { productId, rating, comment, userName } = req.body;
 	const userId = req.user._id; // Assuming `req.user` is populated by authentication middleware
 
 	// Create a new review document
 	const newReview = new Review({
 		productId,
 		userId,
+		userName,
 		rating,
 		comment,
 		likes: [],
@@ -38,6 +39,40 @@ const createReview = catchAsync(async (req: Request, res: Response) => {
 		data: newReview,
 	});
 });
+// Controller - Backend Code
+const getAllReviewsFromDb = async (req: Request, res: Response) => {
+	const { page = 1, limit = 6 } = req.query;
+
+	try {
+		// Fetch reviews sorted by rating in descending order
+		const reviews = await Review.find()
+			.sort({ rating: -1 }) // Sort by rating in descending order (5 stars first)
+			.skip((page - 1) * limit) // Skipping reviews based on page
+			.limit(parseInt(limit)); // Limiting reviews to the specified number
+
+		// Get the total number of reviews to calculate total pages
+		const totalReviews = await Review.countDocuments();
+
+		// Calculate total pages
+		const totalPages = Math.ceil(totalReviews / Number(limit));
+
+		return res.status(200).json({
+			success: true,
+			message: "All reviews retrieved successfully",
+			data: reviews,
+			totalReviews: totalReviews,
+			totalPages: totalPages,
+		});
+	} catch (error) {
+		console.error("Error fetching reviews:", error);
+		return res.status(500).json({
+			success: false,
+			message: "Server error while fetching reviews",
+		});
+	}
+};
+
+
 
 // Get reviews by product ID
 const getReviewsByProductId = catchAsync(async (req: Request, res: Response) => {
@@ -172,6 +207,7 @@ const deleteReply = catchAsync(async (req: Request, res: Response) => {
 
 export const ReviewController = {
 	createReview,
+	getAllReviewsFromDb,
 	getReviewsByProductId,
 	likeReview,
 	replyToReview,
