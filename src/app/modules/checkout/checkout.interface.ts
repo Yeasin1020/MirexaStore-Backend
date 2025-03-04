@@ -1,8 +1,4 @@
-// interfaces/checkout.interface.ts
-
 import { TProduct } from "../product/product.interface";
-
-
 
 export interface TCheckout {
 	userId: string;
@@ -15,7 +11,7 @@ export interface TCheckout {
 	shippingCost: number;
 	grandTotal: number;
 	status: string;
-	orderDate: string;
+	orderDate: Date;  // Change to Date type
 	shippingDetails: {
 		fullName: string;
 		phone: string;
@@ -27,6 +23,9 @@ export interface TCheckout {
 		country: string;
 	};
 	deliveryNote: string;
+	discountApplied?: number;
+	isFirstOrderDiscountUsed?: boolean;
+	totalPrice: number;
 }
 
 export interface TOrder {
@@ -47,4 +46,7 @@ export interface TOrder {
 		country: string;
 	};
 	orderDate: string;
+	discountApplied?: number;
+	isFirstOrderDiscountUsed?: boolean;
+	totalPrice: number;
 }

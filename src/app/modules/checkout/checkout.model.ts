@@ -11,7 +11,7 @@ export interface TCheckout {
 	shippingCost: number;
 	grandTotal: number;
 	status: string;
-	orderDate: Date;  // Use Date type for orderDate
+	orderDate: Date;
 	shippingDetails: {
 		fullName: string;
 		phone: string;
@@ -23,6 +23,9 @@ export interface TCheckout {
 		country: string;
 	};
 	deliveryNote: string;
+	discountApplied?: number;
+	isFirstOrderDiscountUsed?: boolean;
+	totalPrice: number;
 }
 
 const checkoutSchema = new Schema<TCheckout>(
@@ -39,7 +42,7 @@ const checkoutSchema = new Schema<TCheckout>(
 		shippingCost: { type: Number, required: true },
 		grandTotal: { type: Number, required: true },
 		status: { type: String, required: true, default: "Processing" },
-		orderDate: { type: Date, required: true },  // Correctly defined as Date
+		orderDate: { type: Date, required: true },
 		shippingDetails: {
 			fullName: { type: String, required: true },
 			phone: { type: String, required: true },
@@ -51,6 +54,9 @@ const checkoutSchema = new Schema<TCheckout>(
 			country: { type: String, required: true },
 		},
 		deliveryNote: { type: String, required: true },
+		discountApplied: { type: Number, default: 0 },
+		isFirstOrderDiscountUsed: { type: Boolean, default: false },
+		totalPrice: { type: Number, required: true },
 	},
 	{ timestamps: true }
 );

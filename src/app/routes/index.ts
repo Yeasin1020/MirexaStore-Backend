@@ -4,6 +4,7 @@ import { AuthRoutes } from "../modules/auth/auth.route";
 import { ProductRoutes } from "../modules/product/product.route";
 import { CheckoutRoutes } from "../modules/checkout/checkout.route";
 import { ReviewRoutes } from "../modules/review/review.route";
+import { NewsLetterRoute } from "../modules/newsletter/newsletter.route";
 
 const router = Router();
 
@@ -32,6 +33,10 @@ const moduleRoutes = [
     path: '/reviews',
     route: ReviewRoutes,
   },
+  {
+    path: '/newsletter',
+    route: NewsLetterRoute,
+  }
 
 
 ];

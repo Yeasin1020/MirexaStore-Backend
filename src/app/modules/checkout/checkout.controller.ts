@@ -13,8 +13,24 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		success: true,
-		message: "Order placed successfully",
+		message: newOrder.isFirstOrderDiscountUsed
+			? "Order placed successfully with 10% discount!"
+			: "Order placed successfully",
 		data: newOrder,
+	});
+});
+
+const getFirstOrderCheckByUserId = catchAsync(async (req: Request, res: Response) => {
+	const { userId } = req.params; // Get userId from the URL
+	const orderCount = await CheckoutService.getFirstOrderCountByUserId(userId);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "First order check successful",
+		data: {
+			isFirstOrder: orderCount === 0, // If count is 0, it's the first order
+		},
 	});
 });
 
@@ -90,6 +106,7 @@ const deleteOrder = catchAsync(async (req: Request, res: Response) => {
 
 export const CheckoutController = {
 	createOrder,
+	getFirstOrderCheckByUserId,
 	getOrderById,
 	getOrdersByUserId,
 	getAllOrders,
