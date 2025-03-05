@@ -16,6 +16,28 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const getFilteredProducts = catchAsync(async (req: Request, res: Response) => {
+	const { category, minPrice, maxPrice } = req.query;
+
+	// Convert minPrice and maxPrice to numbers (if they are present)
+	const minPriceNumber = minPrice ? parseFloat(minPrice as string) : undefined;
+	const maxPriceNumber = maxPrice ? parseFloat(maxPrice as string) : undefined;
+
+	const filteredProducts = await ProductService.getFilteredProducts(
+		category as string,
+		minPriceNumber,
+		maxPriceNumber
+	);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: 'Filtered products retrieved successfully',
+		data: filteredProducts,
+	});
+});
+
+
 const getAllProducts = catchAsync(async (req: Request, res: Response) => {
 	const products = await ProductService.getAllProductsFromDb();
 	sendResponse(res, {
@@ -95,6 +117,7 @@ const getRelatedProducts = catchAsync(async (req: Request, res: Response) => {
 
 export const ProductController = {
 	createProduct,
+	getFilteredProducts,
 	getAllProducts,
 	getProductById,
 	updateProduct,

@@ -10,6 +10,29 @@ const createProductIntoDb = async (productData: Partial<TProduct>) => {
 	return newProduct;
 };
 
+const getFilteredProducts = async (category?: string, minPrice?: number, maxPrice?: number) => {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const filter: { [key: string]: any } = {};
+
+	if (category) {
+		filter.category = category;
+	}
+
+	if (minPrice !== undefined || maxPrice !== undefined) {
+		filter.price = {};
+		if (minPrice !== undefined) {
+			filter.price.$gte = minPrice;
+		}
+		if (maxPrice !== undefined) {
+			filter.price.$lte = maxPrice;
+		}
+	}
+
+	const products = await Product.find(filter);
+	return products;
+};
+
+
 const getAllProductsFromDb = async () => {
 	return await Product.find(); // Retrieve all products from the database
 };
@@ -73,6 +96,7 @@ const getRelatedProducts = async (category: string, excludeId: string) => {
 
 export const ProductService = {
 	createProductIntoDb,
+	getFilteredProducts,
 	getAllProductsFromDb,
 	getProductById,
 	updateProductIntoDb,

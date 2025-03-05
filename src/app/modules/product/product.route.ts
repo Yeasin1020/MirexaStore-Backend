@@ -6,6 +6,7 @@ import { ProductController } from './product.controller';
 const router = express.Router();
 
 router.post('/', authenticate, adminMiddleware, ProductController.createProduct);
+router.get('/filter', ProductController.getFilteredProducts);
 router.get('/', ProductController.getAllProducts);
 router.get('/:id', ProductController.getProductById);
 // router.get("/search-suggestions", ProductController.getSearchSuggestions);
