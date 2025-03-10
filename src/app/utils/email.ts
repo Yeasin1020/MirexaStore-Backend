@@ -200,3 +200,102 @@ export const sendOrderConfirmationEmail = async ({
     transporter.sendMail(adminMailOptions),
   ]);
 };
+
+
+export const sendShippedEmail = async (userEmail: string, orderId: string) => {
+  // Setup email transporter
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER, // .env ফাইল থেকে ইউজারনেম
+      pass: process.env.EMAIL_PASS, // .env ফাইল থেকে পাসওয়ার্ড
+    },
+  });
+
+  // Email options
+  const mailOptions = {
+    from: `"MirexaStore" <${process.env.EMAIL_USER}>`, // .env থেকে ইউজারনেম
+    to: userEmail,
+    subject: `Your order MIREXA-${orderId.toString().slice(-6)} has been shipped!`,
+    html: `
+      <div style="font-family: 'Arial', sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; padding: 30px; border-radius: 8px; border: 1px solid #ddd;">
+        <div style="text-align: center; padding: 20px;">
+          <h1 style="font-size: 30px; color: #333;">MirexaStore</h1>
+          <h3 style="font-size: 18px; color: #888; margin-top: 0;">Order Shipped</h3>
+        </div>
+        <div style="padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+          <h3 style="color: #333; font-size: 22px; font-weight: bold;">Your order (MIREXA-${orderId.toString().slice(-6)}) has been shipped!</h3>
+          <p style="color: #555; font-size: 16px; line-height: 1.5;">We are excited to let you know that your order is on its way!</p>
+          <p style="color: #555; font-size: 16px; line-height: 1.5;">Thank you for choosing MirexaStore. We are confident you'll love your purchase!</p>
+          <p style="color: #F85606; font-size: 16px; font-weight: bold;">Stay tuned for more updates!</p>
+        </div>
+        <div style="padding: 15px; text-align: center; margin-top: 20px;">
+          <p style="color: #777; font-size: 14px;">Best regards, <br/>The MirexaStore Team</p>
+          <p style="font-size: 12px; color: #aaa;">If you have any questions, feel free to contact us at <a href="mailto:support@mirexastore.com" style="color: #F85606;">support@mirexastore.com</a></p>
+        </div>
+        <div style="text-align: center; padding: 10px; background-color: #F85606; border-radius: 0 0 8px 8px;">
+          <p style="font-size: 12px; color: #fff;">&copy; 2025 MirexaStore. All Rights Reserved.</p>
+        </div>
+      </div>
+    `,
+  };
+
+  // Send email
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Shipped email sent successfully.');
+  } catch (error) {
+    console.error('Error sending shipped email:', error);
+    throw new Error('Failed to send email');
+  }
+};
+
+
+export const sendDeliveredEmail = async (userEmail: string, orderId: string, orderDate: Date) => {
+  // Setup email transporter
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER, // .env ফাইল থেকে ইউজারনেম
+      pass: process.env.EMAIL_PASS, // .env ফাইল থেকে পাসওয়ার্ড
+    },
+  });
+
+  // Email options
+  const mailOptions = {
+    from: `"MirexaStore" <${process.env.EMAIL_USER}>`, // .env থেকে ইউজারনেম
+    to: userEmail,
+    subject: `Your order MIREXA-${orderId.toString().slice(-6)} has been delivered!`,
+    html: `
+      <div style="font-family: 'Arial', sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; padding: 30px; border-radius: 8px; border: 1px solid #ddd;">
+        <div style="text-align: center; padding: 20px;">
+          <h1 style="font-size: 30px; color: #333;">MirexaStore</h1>
+          <h3 style="font-size: 18px; color: #888; margin-top: 0;">Order Delivered</h3>
+        </div>
+        <div style="padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+          <h3 style="color: #333; font-size: 22px; font-weight: bold;">Your order (MIREXA-${orderId.toString().slice(-6)}) has been successfully delivered!</h3>
+          <p style="color: #555; font-size: 16px; line-height: 1.5;">We hope you love your purchase!</p>
+          <p style="color: #555; font-size: 16px; line-height: 1.5;">The order date was <strong>${orderDate}</strong>.</p>
+          <p style="color: #F85606; font-size: 16px; font-weight: bold;">Thank you for your trust in MirexaStore. We look forward to serving you again soon!</p>
+        </div>
+        <div style="padding: 15px; text-align: center; margin-top: 20px;">
+          <p style="color: #777; font-size: 14px;">Best regards, <br/>The MirexaStore Team</p>
+          <p style="font-size: 12px; color: #aaa;">If you have any questions, feel free to contact us at <a href="mailto:support@mirexastore.com" style="color: #F85606;">support@mirexastore.com</a></p>
+        </div>
+        <div style="text-align: center; padding: 10px; background-color: #F85606; border-radius: 0 0 8px 8px;">
+          <p style="font-size: 12px; color: #fff;">&copy; 2025 MirexaStore. All Rights Reserved.</p>
+        </div>
+      </div>
+    `,
+  };
+
+  // Send email
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Delivered email sent successfully.');
+  } catch (error) {
+    console.error('Error sending delivered email:', error);
+    throw new Error('Failed to send email');
+  }
+};

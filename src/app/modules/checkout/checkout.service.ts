@@ -1,6 +1,6 @@
 // services/checkout.service.ts
 
-import { sendOrderConfirmationEmail } from "../../utils/email";
+import { sendDeliveredEmail, sendOrderConfirmationEmail, sendShippedEmail } from "../../utils/email";
 import { NewsletterSubscriber } from "../newsletter/newsletter.model";
 import { TCheckout } from "./checkout.interface";
 import Checkout from "./checkout.model";
@@ -72,14 +72,33 @@ const getAllOrders = async () => {
 	return await Checkout.find().exec();
 };
 
-// CheckoutService.ts
 const updateOrderStatusInDb = async (id: string, status: string) => {
 	const updatedOrder = await Checkout.findByIdAndUpdate(id, { status }, { new: true }).lean().exec();
+
 	if (!updatedOrder) {
-		throw new Error("Order not found");
+		throw new Error('Order not found');
 	}
+
+
+
+	// ✅ Send email when status changes to Shipped
+	if (status === 'Shipped') {
+		// Send email to user when order status is "Shipped"
+		await sendShippedEmail(updatedOrder.shippingDetails.email, updatedOrder._id.toString());
+	}
+	// ✅ Send email when status changes to Delivered
+	else if (status === 'Delivered') {
+		// Send email to user when order status is "Delivered"
+		await sendDeliveredEmail(updatedOrder.shippingDetails.email, updatedOrder._id.toString(), updatedOrder.orderDate);
+	}
+
 	return updatedOrder;
 };
+
+
+
+
+
 
 const deleteOrderById = async (orderId: string) => {
 	const order = await Checkout.findByIdAndDelete(orderId);
