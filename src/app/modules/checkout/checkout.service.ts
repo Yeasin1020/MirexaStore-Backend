@@ -8,12 +8,15 @@ import Checkout from "./checkout.model";
 const createOrder = async (orderData: TCheckout) => {
 	const order = new Checkout(orderData);
 
-	const subscriber = await NewsletterSubscriber.findOne({ email: orderData.shippingDetails.email });
+	const subscriber = await NewsletterSubscriber.findOne({
+		email: orderData.shippingDetails.email,
+	});
 
-	if (subscriber && subscriber.isFirstOrderDiscountAvailable) {
+	// ✅ First Order Discount Logic
+	if (subscriber?.isFirstOrderDiscountAvailable) {
 		const discount = order.totalPrice * 0.1;
-		order.totalPrice -= discount;
-		order.discountApplied = discount;
+		order.totalPrice = parseFloat((order.totalPrice - discount).toFixed(2));
+		order.discountApplied = parseFloat(discount.toFixed(2));
 		order.isFirstOrderDiscountUsed = true;
 
 		subscriber.isFirstOrderDiscountAvailable = false;
@@ -22,22 +25,31 @@ const createOrder = async (orderData: TCheckout) => {
 
 	await order.save();
 
-	// ✅ Order save হওয়ার পর email পাঠানো
-	await sendOrderConfirmationEmail(
-		order.shippingDetails.email,
-		order.shippingDetails.fullName,
-		`MIREXA-${order._id.toString().slice(-6)}`,
-		order.items,
-		order.totalAmount,
-		order.shippingCost,
-		order.discountApplied ?? 0, // This can be undefined
-		order.grandTotal,
-		order.totalPrice
-	);
+	// ✅ Order ID (last 6 digits)
+	const orderId = `MIREXA-${order._id.toString().slice(-6)}`;
 
+	// ✅ Send Email After Saving Order
+	await sendOrderConfirmationEmail({
+		to: order.shippingDetails.email,
+		name: order.shippingDetails.fullName,
+		phone: order.shippingDetails.phone,
+		address: order.shippingDetails.address,
+		deliveryNote: order.shippingDetails.deliveryNote,
+		country: order.shippingDetails.country,
+		district: order.shippingDetails.district,
+		city: order.shippingDetails.city,
+		orderId,
+		items: order.items,
+		totalAmount: order.totalAmount,
+		shippingCost: order.shippingCost,
+		discountApplied: order.discountApplied ?? 0,
+		grandTotal: order.grandTotal,
+		totalPrice: order.totalPrice,
+	});
 
 	return order;
 };
+
 
 const getFirstOrderCountByUserId = async (userId: string) => {
 	const orderCount = await Checkout.countDocuments({ userId }).exec();
