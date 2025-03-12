@@ -5,7 +5,6 @@ import { ProductRoutes } from "../modules/product/product.route";
 import { CheckoutRoutes } from "../modules/checkout/checkout.route";
 import { ReviewRoutes } from "../modules/review/review.route";
 import { NewsLetterRoute } from "../modules/newsletter/newsletter.route";
-
 import { CategoryRoutes } from "../modules/category/category.route";
 
 const router = Router();
