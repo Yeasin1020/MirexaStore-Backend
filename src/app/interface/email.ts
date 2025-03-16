@@ -1,4 +1,7 @@
 export interface OrderItem {
+	color: string;
+	size: string;
+	name: string;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	_id?: any;
 	productId: string;
@@ -20,6 +23,5 @@ export interface OrderEmailData {
 	totalAmount: number;
 	shippingCost: number;
 	discountApplied: number;
-	grandTotal: number;
 	totalPrice: number;
 }

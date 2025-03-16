@@ -1,4 +1,4 @@
-import { Schema, model, Types } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { TCategory } from './category.interface';
 import slugify from 'slugify';
 
@@ -10,9 +10,7 @@ const categorySchema = new Schema<TCategory>(
 		bannerImage: { type: String },
 		description: { type: String },
 		isFeatured: { type: Boolean, default: false },
-		status: { type: String, enum: ['active', 'inactive'], default: 'active' },
-		createdBy: { type: Types.ObjectId, ref: 'User' },
-		updatedBy: { type: Types.ObjectId, ref: 'User' },
+		status: { type: String, enum: ['active', 'inactive'], default: 'active' }
 	},
 	{ timestamps: true }
 );

@@ -10,6 +10,29 @@ const createProductIntoDb = async (productData: Partial<TProduct>) => {
 	return newProduct;
 };
 
+const getProductsByCategory = async (category: string) => {
+	const products = await Product.find({ category }).lean().exec();
+
+	if (!products.length) {
+		throw new Error("No products found for this category");
+	}
+
+	return products;
+};
+
+
+const getProductByCategorySlug = async (category: string, slug: string) => {
+	const product = await Product.findOne({ category, slug }).lean().exec();
+
+	if (!product) {
+		throw new Error("Product not found");
+	}
+
+	return product;
+};
+
+
+
 const getFilteredProducts = async (category?: string, minPrice?: number, maxPrice?: number) => {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const filter: { [key: string]: any } = {};
@@ -35,6 +58,14 @@ const getFilteredProducts = async (category?: string, minPrice?: number, maxPric
 
 const getAllProductsFromDb = async () => {
 	return await Product.find(); // Retrieve all products from the database
+};
+
+const getProductBySlug = async (slug: string) => {
+	const product = await Product.findOne({ slug });
+	if (!product) {
+		throw new Error('Product not found');
+	}
+	return product;
 };
 
 const getProductById = async (id: string) => {
@@ -96,6 +127,9 @@ const getRelatedProducts = async (category: string, excludeId: string) => {
 
 export const ProductService = {
 	createProductIntoDb,
+	getProductBySlug,
+	getProductsByCategory,
+	getProductByCategorySlug,
 	getFilteredProducts,
 	getAllProductsFromDb,
 	getProductById,

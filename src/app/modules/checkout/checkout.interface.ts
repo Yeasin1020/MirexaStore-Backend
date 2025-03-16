@@ -6,6 +6,8 @@ export interface TCheckout {
 		productId: string;
 		quantity: number;
 		price: number;
+		color?: string;
+		size?: string;
 	}[];
 	totalAmount: number;
 	shippingCost: number;

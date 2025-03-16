@@ -16,6 +16,34 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const getProductsByCategory = catchAsync(async (req: Request, res: Response) => {
+	const { category } = req.params;
+
+	const products = await ProductService.getProductsByCategory(category);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: 'Products retrieved successfully for this category',
+		data: products,
+	});
+});
+
+
+const getProductByCategorySlug = catchAsync(async (req: Request, res: Response) => {
+	const { category, slug } = req.params;
+
+	const product = await ProductService.getProductByCategorySlug(category, slug);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: 'Product retrieved successfully',
+		data: product,
+	});
+});
+
+
 const getFilteredProducts = catchAsync(async (req: Request, res: Response) => {
 	const { category, minPrice, maxPrice } = req.query;
 
@@ -47,6 +75,18 @@ const getAllProducts = catchAsync(async (req: Request, res: Response) => {
 		data: products,
 	});
 });
+
+// Get Product by Slug
+const getProductBySlug = async (req: Request, res: Response) => {
+	try {
+		const { slug } = req.params;
+		const product = await ProductService.getProductBySlug(slug);
+		res.status(200).json({ data: product });
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} catch (error: any) {
+		res.status(404).json({ message: error.message });
+	}
+};
 
 const getProductById = catchAsync(async (req: Request, res: Response) => {
 	const { id } = req.params;
@@ -117,6 +157,9 @@ const getRelatedProducts = catchAsync(async (req: Request, res: Response) => {
 
 export const ProductController = {
 	createProduct,
+	getProductBySlug,
+	getProductsByCategory,
+	getProductByCategorySlug,
 	getFilteredProducts,
 	getAllProducts,
 	getProductById,

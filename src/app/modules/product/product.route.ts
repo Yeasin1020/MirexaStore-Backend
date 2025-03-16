@@ -8,7 +8,11 @@ const router = express.Router();
 router.post('/', authenticate, adminMiddleware, ProductController.createProduct);
 router.get('/filter', ProductController.getFilteredProducts);
 router.get('/', ProductController.getAllProducts);
-router.get('/:id', ProductController.getProductById);
+router.get('/history/:id', ProductController.getProductById);
+
+router.get('/category/:category', ProductController.getProductsByCategory);
+router.get('/:slug', ProductController.getProductBySlug);
+router.get('/category/:category/:slug', ProductController.getProductByCategorySlug); // Category -> Slug URL structure
 // router.get("/search-suggestions", ProductController.getSearchSuggestions);
 router.put('/:id', authenticate, ProductController.updateProduct);
 router.delete('/:id', authenticate, ProductController.deleteProduct);
