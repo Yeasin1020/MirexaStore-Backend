@@ -18,6 +18,7 @@ export interface OrderEmailData {
 	deliveryNote: string;
 	country: string;
 	district: string;
+	status: string;
 	orderId: string;
 	items: OrderItem[];
 	totalAmount: number;

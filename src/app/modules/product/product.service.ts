@@ -57,8 +57,9 @@ const getFilteredProducts = async (category?: string, minPrice?: number, maxPric
 
 
 const getAllProductsFromDb = async () => {
-	return await Product.find(); // Retrieve all products from the database
+	return await Product.find({ status: 'active' }); // Retrieve only active products
 };
+
 
 const getProductBySlug = async (slug: string) => {
 	const product = await Product.findOne({ slug });
@@ -125,6 +126,25 @@ const getRelatedProducts = async (category: string, excludeId: string) => {
 	return relatedProducts;
 };
 
+// New service method to update product status to 'inactive'
+const updateProductStatus = async (id: string) => {
+	if (!Types.ObjectId.isValid(id)) {
+		throw new Error("Invalid product ID");
+	}
+
+	const updatedProduct = await Product.findByIdAndUpdate(
+		id,
+		{ status: 'inactive' }, // Set status to 'inactive'
+		{ new: true }
+	).lean().exec();
+
+	if (!updatedProduct) {
+		throw new Error("Product not found");
+	}
+	return updatedProduct;
+};
+
+
 export const ProductService = {
 	createProductIntoDb,
 	getProductBySlug,
@@ -135,5 +155,6 @@ export const ProductService = {
 	getProductById,
 	updateProductIntoDb,
 	deleteProductFromDb,
-	getRelatedProducts
+	getRelatedProducts,
+	updateProductStatus
 };

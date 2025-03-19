@@ -1,7 +1,7 @@
 // services/checkout.service.ts
 
 import { OrderItem } from "../../interface/email";
-import { sendOrderConfirmationEmail, } from "../../utils/email";
+import { sendOrderConfirmationEmail, sendOrderStatusConfirmationEmail, } from "../../utils/email";
 import { NewsletterSubscriber } from "../newsletter/newsletter.model";
 import Product from "../product/product.model";
 import { TCheckout } from "./checkout.interface";
@@ -54,6 +54,7 @@ const createOrder = async (orderData: TCheckout) => {
 		name: order.shippingDetails.fullName,
 		phone: order.shippingDetails.phone,
 		address: order.shippingDetails.address,
+		status: order.status,
 		deliveryNote: order.shippingDetails.deliveryNote,
 		country: order.shippingDetails.country,
 		district: order.shippingDetails.district,
@@ -108,6 +109,7 @@ const getAllOrders = async () => {
 	return await Checkout.find().exec();
 };
 
+// Order Status Update and Email Send
 const updateOrderStatusInDb = async (id: string, status: string) => {
 	const updatedOrder = await Checkout.findByIdAndUpdate(id, { status }, { new: true }).lean().exec();
 
@@ -115,9 +117,34 @@ const updateOrderStatusInDb = async (id: string, status: string) => {
 		throw new Error('Order not found');
 	}
 
-
-
-
+	// Send Shipment or Delivery Email based on Status Change
+	if (status === "Shipped" || status === "Delivered") {
+		await sendOrderStatusConfirmationEmail({
+			to: updatedOrder.shippingDetails.email,
+			name: updatedOrder.shippingDetails.fullName,
+			phone: updatedOrder.shippingDetails.phone,
+			orderId: `MIREXA-${updatedOrder._id.toString().slice(-6)}`,
+			address: updatedOrder.shippingDetails.address,
+			status: updatedOrder.status,
+			deliveryNote: updatedOrder.shippingDetails.deliveryNote,
+			country: updatedOrder.shippingDetails.country,
+			district: updatedOrder.shippingDetails.district,
+			city: updatedOrder.shippingDetails.city,
+			items: updatedOrder.items.map((item) => ({
+				productId: item.productId,
+				quantity: item.quantity,
+				price: item.price,
+				name: item.name || 'N/A',
+				color: item.color || 'N/A',
+				size: item.size || 'N/A',
+				productImage: item.productImage || [], // ensure array even if empty
+			})),
+			totalAmount: updatedOrder.totalAmount,
+			shippingCost: updatedOrder.shippingCost,
+			discountApplied: updatedOrder.discountApplied ?? 0,
+			totalPrice: updatedOrder.totalPrice,
+		});
+	}
 
 	return updatedOrder;
 };

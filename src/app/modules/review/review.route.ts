@@ -11,7 +11,7 @@ router.post('/like/:reviewId', authenticate, ReviewController.likeReview);  // L
 router.post('/reply/:reviewId', authenticate, ReviewController.replyToReview);  // Reply to review
 router.put('/edit/:reviewId', authenticate, ReviewController.editReview);  // Edit a review
 router.delete('/delete/:reviewId', authenticate, ReviewController.deleteReview);  // Delete a review
-router.put('/edit-reply/:reviewId/:replyId', authenticate, ReviewController.editReply);  // Edit a reply
+// router.put('/edit-reply/:reviewId/:replyId', authenticate, ReviewController.editReply);  // Edit a reply
 router.delete('/delete-reply/:reviewId/:replyId', authenticate, ReviewController.deleteReply);  // Delete a reply
 
 export const ReviewRoutes = router;

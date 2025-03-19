@@ -40,37 +40,42 @@ const createReview = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 // Controller - Backend Code
-const getAllReviewsFromDb = async (req: Request, res: Response) => {
+// Fetch all reviews with pagination
+const getAllReviewsFromDb = catchAsync(async (req: Request, res: Response) => {
 	const { page = 1, limit = 6 } = req.query;
+
+	// Parse the page and limit query parameters safely
+	const pageNumber = Math.max(Number(page), 1); // Ensure page is at least 1
+	const limitNumber = Math.max(Number(limit), 1); // Ensure limit is at least 1
 
 	try {
 		// Fetch reviews sorted by rating in descending order
 		const reviews = await Review.find()
-			.sort({ rating: -1 }) // Sort by rating in descending order (5 stars first)
-			.skip((page - 1) * limit) // Skipping reviews based on page
-			.limit(parseInt(limit)); // Limiting reviews to the specified number
+			.sort({ rating: -1 })
+			.skip((pageNumber - 1) * limitNumber)
+			.limit(limitNumber);
 
 		// Get the total number of reviews to calculate total pages
 		const totalReviews = await Review.countDocuments();
 
 		// Calculate total pages
-		const totalPages = Math.ceil(totalReviews / Number(limit));
+		const totalPages = Math.ceil(totalReviews / limitNumber);
 
 		return res.status(200).json({
 			success: true,
-			message: "All reviews retrieved successfully",
+			message: 'All reviews retrieved successfully',
 			data: reviews,
-			totalReviews: totalReviews,
-			totalPages: totalPages,
+			totalReviews,
+			totalPages,
 		});
 	} catch (error) {
-		console.error("Error fetching reviews:", error);
+		console.error('Error fetching reviews:', error);
 		return res.status(500).json({
 			success: false,
-			message: "Server error while fetching reviews",
+			message: 'Server error while fetching reviews',
 		});
 	}
-};
+});
 
 
 
@@ -156,31 +161,31 @@ const deleteReview = catchAsync(async (req: Request, res: Response) => {
 });
 
 // Edit a reply
-const editReply = catchAsync(async (req: Request, res: Response) => {
-	const { reviewId, replyId } = req.params;
-	const userId = req.user._id;
-	const { updatedComment } = req.body;
+// const editReply = catchAsync(async (req: Request, res: Response) => {
+// 	const { reviewId, replyId } = req.params;
+// 	const userId = req.user._id;
+// 	const { updatedComment } = req.body;
 
-	console.log('Received reviewId:', reviewId);
-	console.log('Received replyId:', replyId);
-	console.log('User ID from token:', userId);
-	console.log('Updated comment from request body:', updatedComment);
+// 	console.log('Received reviewId:', reviewId);
+// 	console.log('Received replyId:', replyId);
+// 	console.log('User ID from token:', userId);
+// 	console.log('Updated comment from request body:', updatedComment);
 
-	// Ensure updatedComment exists in the request body
-	if (!updatedComment) {
-		throw new Error("Updated comment is required");
-	}
+// 	// Ensure updatedComment exists in the request body
+// 	if (!updatedComment) {
+// 		throw new Error("Updated comment is required");
+// 	}
 
-	// Call the service to edit the reply
-	const updatedReview = await ReviewService.editReply(reviewId, replyId, userId, updatedComment);
+// 	// Call the service to edit the reply
+// 	const updatedReview = await ReviewService.editReply(reviewId, replyId, userId, updatedComment);
 
-	sendResponse(res, {
-		statusCode: httpStatus.OK,
-		success: true,
-		message: 'Reply updated successfully',
-		data: updatedReview,
-	});
-});
+// 	sendResponse(res, {
+// 		statusCode: httpStatus.OK,
+// 		success: true,
+// 		message: 'Reply updated successfully',
+// 		data: updatedReview,
+// 	});
+// });
 
 
 // Delete a reply
@@ -213,6 +218,6 @@ export const ReviewController = {
 	replyToReview,
 	editReview,
 	deleteReview,
-	editReply,
+
 	deleteReply
 };

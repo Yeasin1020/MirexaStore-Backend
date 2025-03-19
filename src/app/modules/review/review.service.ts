@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 import Review from './review.model';
 import Product from '../product/product.model';
-import { TReply, TReview } from './review.interface';
+import { TReview } from './review.interface';
 
 
 const createReview = async (reviewData: TReview) => {
@@ -160,75 +160,83 @@ const deleteReview = async (reviewId: string, userId: string) => {
 };
 
 // // Edit a reply
-const editReply = async (reviewId: string, replyId: string, userId: string, updatedComment: string) => {
-	console.log('Review ID:', reviewId);
-	console.log('Reply ID:', replyId);
-	console.log('User ID:', userId);
-	console.log('Updated Comment:', updatedComment);
+// const editReply = async (reviewId: string, replyId: string, userId: string, updatedComment: string) => {
+// 	console.log('Review ID:', reviewId);
+// 	console.log('Reply ID:', replyId);
+// 	console.log('User ID:', userId);
+// 	console.log('Updated Comment:', updatedComment);
 
-	if (!Types.ObjectId.isValid(reviewId) || !Types.ObjectId.isValid(replyId) || !Types.ObjectId.isValid(userId)) {
-		throw new Error("Invalid review, reply, or user ID");
-	}
+// 	if (!Types.ObjectId.isValid(reviewId) || !Types.ObjectId.isValid(replyId) || !Types.ObjectId.isValid(userId)) {
+// 		throw new Error("Invalid review, reply, or user ID");
+// 	}
 
-	const reviewObjectId = new Types.ObjectId(reviewId);
-	const replyObjectId = new Types.ObjectId(replyId);
+// 	const reviewObjectId = new Types.ObjectId(reviewId);
+// 	const replyObjectId = new Types.ObjectId(replyId);
 
-	const review = await Review.findById(reviewObjectId);
-	if (!review) {
-		throw new Error("Review not found");
-	}
+// 	const review = await Review.findById(reviewObjectId);
+// 	if (!review) {
+// 		throw new Error("Review not found");
+// 	}
 
-	const replyIndex = review.replies.findIndex((reply) => reply._id.toString() === replyObjectId.toString());
-	if (replyIndex === -1) {
-		throw new Error("Reply not found");
-	}
+// 	const replyIndex = review.replies.findIndex((reply) => reply._id.toString() === replyObjectId.toString());
+// 	if (replyIndex === -1) {
+// 		throw new Error("Reply not found");
+// 	}
 
-	const reply = review.replies[replyIndex];
+// 	const reply = review.replies[replyIndex];
 
-	// Use .equals() to compare ObjectIds
-	if (!reply.userId.equals(userId)) {
-		throw new Error("You are not authorized to edit this reply");
-	}
+// 	// Use .equals() to compare ObjectIds
+// 	if (!reply.userId.equals(userId)) {
+// 		throw new Error("You are not authorized to edit this reply");
+// 	}
 
-	// Update the reply's comment
-	review.replies[replyIndex].comment = updatedComment;
+// 	// Update the reply's comment
+// 	review.replies[replyIndex].comment = updatedComment;
 
-	await review.save();
+// 	await review.save();
 
-	return review;
-};
+// 	return review;
+// };
 
 
 // Delete a reply
+// Delete a reply
 const deleteReply = async (reviewId: string, replyId: string, userId: string) => {
-
-
 	const reviewObjectId = new Types.ObjectId(reviewId);
 	const replyObjectId = new Types.ObjectId(replyId);
 
+	// Fetch the review from the database
 	const review = await Review.findById(reviewObjectId);
 	if (!review) {
 		throw new Error("Review not found");
 	}
 
-	// Find the reply
-	const replyIndex = review.replies.findIndex((r) => r._id.toString() === replyObjectId.toString());
+	// Find the reply by index and ensure the _id exists
+	const replyIndex = review.replies.findIndex((r) => r._id && r._id.toString() === replyObjectId.toString());
 	if (replyIndex === -1) {
 		throw new Error("Reply not found");
 	}
 
+	// Get the reply object
 	const reply = review.replies[replyIndex];
 
+	// Ensure the reply is not undefined and has an _id
+	if (!reply || !reply._id) {
+		throw new Error("Reply does not exist or has no _id");
+	}
 
-	// Fix: Convert ObjectId to String before comparing
+	// Check if the user is authorized to delete the reply
 	if (reply.userId.toString() !== userId.toString()) {
 		throw new Error("You are not authorized to delete this reply");
 	}
 
-	// Remove reply from array
+	// Remove the reply from the replies array
 	review.replies.splice(replyIndex, 1);
 
+	// Save the updated review
 	await review.save();
+
+	// Return the updated review object
 	return review;
 };
 
@@ -241,6 +249,5 @@ export const ReviewService = {
 	replyToReview,
 	editReview,
 	deleteReview,
-	editReply,
 	deleteReply
 };

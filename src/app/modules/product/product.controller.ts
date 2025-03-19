@@ -155,6 +155,20 @@ const getRelatedProducts = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const updateProductStatus = catchAsync(async (req: Request, res: Response) => {
+	const { id } = req.params;
+
+	// Update product status to 'inactive'
+	const updatedProduct = await ProductService.updateProductStatus(id);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: 'Product status updated to inactive',
+		data: updatedProduct,
+	});
+});
+
 export const ProductController = {
 	createProduct,
 	getProductBySlug,
@@ -165,5 +179,6 @@ export const ProductController = {
 	getProductById,
 	updateProduct,
 	deleteProduct,
-	getRelatedProducts
+	getRelatedProducts,
+	updateProductStatus
 };
