@@ -16,12 +16,11 @@ const app: Application = express();
 // Parsers
 app.use(express.json()); // Parse incoming JSON payloads
 
-// CORS configuration
+// ✅ CORS configuration to allow all origins
 const corsOptions = {
-  origin: [
-    "http://localhost:3000", // Frontend development URL
-    "http://localhost:5173", // If using another port for frontend, add here
-  ],
+  origin: "*", // Allow requests from any domain
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"], // Allowed HTTP methods
+  allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
   credentials: true, // Allow cookies and headers to be sent in requests
 };
 
