@@ -18,10 +18,7 @@ app.use(express.json()); // Parse incoming JSON payloads
 
 // CORS configuration
 const corsOptions = {
-  origin: [
-    "http://localhost:3000", // Frontend development URL
-    "http://localhost:5173", // If using another port for frontend, add here
-  ],
+  origin: "*", // Allow all origins
   credentials: true, // Allow cookies and headers to be sent in requests
 };
 
