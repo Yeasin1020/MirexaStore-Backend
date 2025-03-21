@@ -1,4 +1,3 @@
-
 import { Schema, model } from 'mongoose';
 import { TUser } from './user.interface';
 
@@ -14,9 +13,9 @@ const userSchema = new Schema<TUser>(
 		email: { type: String, required: true, unique: true },
 		password: { type: String, required: true, select: false },
 		phone: { type: String, required: true },
-		address: { type: String, required: true },
+		address: { type: String },
 		role: { type: String, required: true, enum: Object.keys(USER_ROLE) },
-		googleId: { type: String, unique: true },
+		googleId: { type: String, unique: true, sparse: true }, // Optional field
 	},
 	{
 		toJSON: {
@@ -38,14 +37,16 @@ const userSchema = new Schema<TUser>(
 	},
 );
 
-//hashing password
+// Hashing password before saving the user
 userSchema.pre('save', async function (next) {
 	// eslint-disable-next-line @typescript-eslint/no-this-alias
 	const user = this;
-	user.password = await bcrypt.hash(
-		user.password,
-		Number(config.bcrypt_salt_rounds),
-	);
+	if (user.isModified('password')) {
+		user.password = await bcrypt.hash(
+			user.password,
+			Number(config.bcrypt_salt_rounds),
+		);
+	}
 	next();
 });
 

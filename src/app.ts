@@ -1,7 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import passport from 'passport';
@@ -18,11 +14,11 @@ app.use(express.json()); // Parse incoming JSON payloads
 
 // CORS configuration
 const corsOptions = {
-  origin: "*", // Allow all origins
-  credentials: true, // Allow cookies and headers to be sent in requests
+  origin: '*', // সকল ডোমেইনকে অনুমতি দেওয়া হচ্ছে
+  credentials: true, // কুকি এবং হেডার পাঠানোর অনুমতি
 };
 
-app.use(cors(corsOptions)); // Use CORS middleware with specified options
+app.use(cors(corsOptions)); // CORS middleware ব্যবহার করা হচ্ছে
 
 // Session configuration for Passport.js
 app.use(

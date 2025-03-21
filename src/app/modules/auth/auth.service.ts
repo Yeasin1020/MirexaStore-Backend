@@ -28,7 +28,7 @@ const googleLogin = async (googleProfile: any) => {
 			name: googleProfile.name,
 			email: googleProfile.email,
 			phone: googleProfile.phone || "",
-			address: googleProfile.address || "",
+			address: googleProfile.address || undefined, // Address is now optional
 			role: "user", // Default role
 			googleId: googleProfile.id,
 		});
@@ -75,7 +75,11 @@ const signup = async (payload: TUser): Promise<any> => {
 		throw new AppError(httpStatus.CONFLICT, 'User already exists');
 	}
 
-	const newUser = await User.create(payload);
+	const newUser = await User.create({
+		...payload,
+		address: payload.address || undefined, // Address is now optional
+	});
+
 	return newUser;
 };
 

@@ -5,7 +5,7 @@ export type TUser = {
 	email: string;
 	password: string;
 	phone: string;
-	address: string;
+	address?: string;
 	role: keyof typeof USER_ROLE;
 	googleId?: string
 };

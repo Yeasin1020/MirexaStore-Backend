@@ -12,8 +12,6 @@ const authenticate = async (req: Request, res: Response, next: NextFunction) => 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const decoded = jwt.verify(token, config.jwt_access_secret as string) as any;
 
-
-
 		const user = await User.findOne({ email: decoded.email }).select('-password');
 
 
