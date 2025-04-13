@@ -1,4 +1,5 @@
 export interface OrderItem {
+	sellerEmail: string;
 	color: string;
 	size: string;
 	name: string;

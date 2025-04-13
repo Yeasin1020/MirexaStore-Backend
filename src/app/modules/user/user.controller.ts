@@ -64,4 +64,15 @@ const makeAdmin = catchAsync(async (req, res) => {
 	});
 });
 
-export const UserControllers = { getAllUsers, deleteUser, makeAdmin, getProfile, getUserById };
+const makeReseller = catchAsync(async (req, res) => {
+	const { id } = req.params;
+	const updatedUser = await UserServices.makeReseller(id);
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "User role updated to reseller",
+		data: updatedUser,
+	});
+});
+
+export const UserControllers = { getAllUsers, deleteUser, makeAdmin, getProfile, getUserById, makeReseller };

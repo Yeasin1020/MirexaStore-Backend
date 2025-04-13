@@ -9,13 +9,21 @@ export type TProduct = {
 	category: string;
 
 	// Recommended Additional Fields
+	longDescription?: string;
+	materials?: string;
+	careInstructions?: string;
+	specifications?: string;
+	additionalInfo?: string;
+
+
+	// Recommended Fields
 	slug: string;
 	discountPrice?: number;
-	SKU?: string; // This can now be replaced by SKU for each variant
+	SKU?: string; // SKU for variants
 	brand?: string;
 	tags?: string[];
 
-	// ✅ Variants (Color + Size + SKU)
+	// Variants (Color + Size + SKU)
 	variants: Array<{
 		color: string;
 		size: string;
@@ -42,7 +50,8 @@ export type TProduct = {
 	// Seller (Optional)
 	sellerId?: Types.ObjectId; // Reference to User model
 	sellerName?: string;
-
+	sellerEmail?: string;
+	sellerNumber: number;
 	// Optional Details
 	features?: string[];
 	notes?: string;

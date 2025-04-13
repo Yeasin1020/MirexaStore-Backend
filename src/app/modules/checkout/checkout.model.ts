@@ -3,6 +3,8 @@ import { Schema, model } from "mongoose";
 export interface TCheckout {
 	userId: string;
 	items: Array<{
+		sellerName: string;
+		sellerEmail: string;
 		productId: string;
 		quantity: number;
 		price: number;
@@ -39,11 +41,13 @@ const checkoutSchema = new Schema<TCheckout>(
 			{
 				productId: { type: String, required: true },
 				quantity: { type: Number, required: true },
+				sellerEmail: { type: String },
+				sellerName: { type: String },
 				price: { type: Number, required: true },
 				color: { type: String },
 				size: { type: String },
 				name: { type: String },
-				productImage: []
+				productImage: { type: [String], default: [] }
 			},
 		],
 		totalAmount: { type: Number, required: true },
@@ -58,7 +62,7 @@ const checkoutSchema = new Schema<TCheckout>(
 			address: { type: String, required: true },
 			city: { type: String, required: true },
 			district: { type: String, required: true },
-			deliveryNote: { type: String, required: true },
+			deliveryNote: { type: String },
 			country: { type: String, required: true },
 		},
 		deliveryNote: { type: String, required: true },

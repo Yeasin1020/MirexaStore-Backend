@@ -27,6 +27,16 @@ export const makeAdmin = async (userId: string) => {
 	if (!updatedUser) throw new Error("User not found");
 	return updatedUser;
 };
+export const makeReseller = async (userId: string) => {
+	const updatedUser = await User.findByIdAndUpdate(
+		userId,
+		{ role: USER_ROLE.reseller },
+		{ new: true }
+	).select("-password");
+
+	if (!updatedUser) throw new Error("User not found");
+	return updatedUser;
+};
 
 export const updateProfile = async (userId: string, updateData: Partial<TUser>) => {
 	const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true }).select("-password");
@@ -34,4 +44,4 @@ export const updateProfile = async (userId: string, updateData: Partial<TUser>) 
 	return updatedUser;
 };
 
-export const UserServices = { getAllUsers, deleteUser, makeAdmin, updateProfile, getProfile };
+export const UserServices = { getAllUsers, deleteUser, makeAdmin, updateProfile, getProfile, makeReseller };

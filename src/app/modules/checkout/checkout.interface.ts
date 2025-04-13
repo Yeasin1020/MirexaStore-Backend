@@ -5,6 +5,8 @@ export interface TCheckout {
 	items: {
 		productId: string;
 		quantity: number;
+		sellerEmail: string;
+		sellerName: string;
 		price: number;
 		color?: string;
 		size?: string;

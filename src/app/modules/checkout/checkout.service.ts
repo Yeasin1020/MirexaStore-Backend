@@ -42,6 +42,8 @@ const createOrder = async (orderData: TCheckout) => {
 		productId: item.productId,
 		quantity: item.quantity,
 		price: item.price,
+		sellerEmail: item.sellerEmail,
+		sellerName: item.sellerName,
 		name: item.name || 'N/A',
 		color: item.color || 'N/A',
 		size: item.size || 'N/A',
@@ -55,7 +57,7 @@ const createOrder = async (orderData: TCheckout) => {
 		phone: order.shippingDetails.phone,
 		address: order.shippingDetails.address,
 		status: order.status,
-		deliveryNote: order.shippingDetails.deliveryNote,
+		deliveryNote: order?.shippingDetails?.deliveryNote,
 		country: order.shippingDetails.country,
 		district: order.shippingDetails.district,
 		city: order.shippingDetails.city,
@@ -101,8 +103,11 @@ const getOrderById = async (orderId: string) => {
 	return order;
 };
 const getOrdersByUserId = async (userId: string) => {
-	return await Checkout.find({ userId }).exec();
+	return await Checkout.find({ userId })
+		.sort({ createdAt: -1 })
+		.exec();
 };
+
 
 
 const getAllOrders = async () => {
@@ -133,6 +138,7 @@ const updateOrderStatusInDb = async (id: string, status: string) => {
 			items: updatedOrder.items.map((item) => ({
 				productId: item.productId,
 				quantity: item.quantity,
+				sellerEmail: item.sellerEmail,
 				price: item.price,
 				name: item.name || 'N/A',
 				color: item.color || 'N/A',

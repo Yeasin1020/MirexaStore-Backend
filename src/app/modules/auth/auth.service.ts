@@ -74,14 +74,22 @@ const signup = async (payload: TUser): Promise<any> => {
 	if (user) {
 		throw new AppError(httpStatus.CONFLICT, 'User already exists');
 	}
-
+	// 👇 Block manual signup as reseller
+	if (payload.role && payload.role === 'reseller') {
+		throw new AppError(httpStatus.FORBIDDEN, 'You are not allowed to signup as reseller');
+	}
+	if (payload.role && payload.role === 'admin') {
+		throw new AppError(httpStatus.FORBIDDEN, 'You are not allowed to signup as admin');
+	}
 	const newUser = await User.create({
 		...payload,
-		address: payload.address || undefined, // Address is now optional
+		role: 'user', // Always default to 'user'
+		address: payload.address || undefined, // Address is optional
 	});
 
 	return newUser;
 };
+
 
 // Login logic
 const login = async (payload: TLoginUser) => {

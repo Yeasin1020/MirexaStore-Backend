@@ -15,9 +15,13 @@ const productSchema = new Schema<TProduct>(
 		price: { type: Number, required: true, min: 0 }, // Base price (can be overridden in variants)
 		stockQuantity: { type: Number, required: true, min: 0, default: 0 }, // Total stock (optional summary)
 		category: { type: String, required: true, trim: true },
-
+		longDescription: { type: String, trim: true },  // Added long description
+		materials: { type: String, trim: true },        // Added materials field
+		careInstructions: { type: String, trim: true }, // Added care instructions field
+		specifications: { type: String, trim: true },    // Added specifications field
+		additionalInfo: { type: String, trim: true },
 		// Recommended Fields
-		slug: { type: String, required: true, trim: true },
+		slug: { type: String, required: true, unique: true, trim: true },
 		discountPrice: { type: Number, default: 0, min: 0 },
 		brand: { type: String, trim: true },
 		tags: { type: [String], default: [] },
@@ -59,7 +63,8 @@ const productSchema = new Schema<TProduct>(
 		// Seller (Optional)
 		sellerId: { type: Schema.Types.ObjectId, ref: 'User' },
 		sellerName: { type: String, trim: true },
-
+		sellerEmail: { type: String, trim: true },
+		sellerNumber: { type: Number, default: 0 },
 		// Optional Details
 		features: { type: [String], default: [] },
 		notes: { type: String, trim: true },
@@ -73,7 +78,6 @@ const productSchema = new Schema<TProduct>(
 );
 
 // ✅ Indexing
-productSchema.index({ slug: 1 });
 productSchema.index({ category: 1 });
 productSchema.index({ brand: 1 });
 productSchema.index({ 'variants.sku': 1 }); // Variant SKU indexing
@@ -84,73 +88,3 @@ export default Product;
 
 
 
-// import { Schema, model } from 'mongoose';
-// import { TProduct } from './product.interface'; // Assuming the interface is in a separate file
-
-// // Validation function for product images (URL validation)
-// function arrayOfValidUrls(value: string[]): boolean {
-// 	return value.every(url => /^https?:\/\//.test(url)); // Ensures it's a valid URL
-// }
-
-// // Define the Mongoose schema for Product
-// const productSchema = new Schema<TProduct>(
-// 	{
-// 		name: { type: String, required: true, trim: true },  // Product name
-// 		description: { type: String, required: true, trim: true },  // Product description
-// 		price: { type: Number, required: true, min: 0 },  // Price should be a positive number
-// 		stockQuantity: { type: Number, required: true, min: 0, default: 0 },  // Quantity in stock (default to 0)
-// 		category: { type: String, required: true, trim: true },  // Category of the product
-// 		productImages: {
-// 			type: [String],  // Array of image URLs
-// 			required: true,  // This field is required
-// 			validate: [arrayOfValidUrls, 'Please provide valid URLs for images'],  // Validation to ensure valid URLs
-// 		},
-// 		reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }],  // Array of ObjectId references to Review model
-// 	},
-// 	{ timestamps: true }  // Add timestamps for createdAt and updatedAt
-// );
-
-// // Create the Mongoose model for Product using the schema
-// const Product = model<TProduct>('Product', productSchema);
-
-// export default Product;
-
-
-
-// import { Schema, model } from 'mongoose';
-// import { TProduct } from './product.interface'; // Assuming the interface is in a separate file
-
-// // Validation function for product images (URL validation)
-// function arrayOfValidUrls(value: string[]): boolean {
-// 	return value.every(url => /^https?:\/\//.test(url)); // Ensures it's a valid URL
-// }
-
-// // Define the Mongoose schema for Product
-// const productSchema = new Schema<TProduct>(
-// 	{
-// 		name: { type: String, required: true, trim: true }, // Product title
-// 		slug: { type: String, required: true, unique: true, trim: true }, // Unique slug for SEO
-// 		description: { type: String, required: true, trim: true }, // Full details of the product
-// 		price: { type: Number, required: true, min: 0 }, // Original price
-// 		discountPrice: { type: Number, default: 0, min: 0 }, // Discounted price (optional)
-// 		stock: { type: Number, required: true, min: 0, default: 0 }, // Available stock quantity
-// 		category: { type: String, required: true, trim: true }, // Product category
-// 		brand: { type: String, required: true, trim: true }, // Product brand
-// 		images: {
-// 			type: [String],
-// 			required: true,
-// 			validate: [arrayOfValidUrls, 'Please provide valid URLs for images'], // Validation for valid image URLs
-// 		},
-// 		tags: { type: [String], default: [] }, // Tags related to the product
-// 		rating: { type: Number, default: 0, min: 0, max: 5 }, // Average rating (0 to 5)
-// 		totalReviews: { type: Number, default: 0 }, // Total number of reviews
-// 		status: { type: String, enum: ['active', 'inactive', 'draft'], default: 'active' }, // Product status
-// 		reviews: [{ type: Schema.Types.ObjectId, ref: 'Review' }], // Array of ObjectId references to Review model
-// 	},
-// 	{ timestamps: true } // Automatically adds createdAt and updatedAt fields
-// );
-
-// // Create the Mongoose model for Product using the schema
-// const Product = model<TProduct>('Product', productSchema);
-
-// export default Product;
