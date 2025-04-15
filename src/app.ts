@@ -14,11 +14,11 @@ app.use(express.json()); // Parse incoming JSON payloads
 
 // CORS configuration
 const corsOptions = {
-  origin: '*', // সকল ডোমেইনকে অনুমতি দেওয়া হচ্ছে
-  credentials: true, // কুকি এবং হেডার পাঠানোর অনুমতি
+  origin: '*',
+  credentials: true,
 };
 
-app.use(cors(corsOptions)); // CORS middleware ব্যবহার করা হচ্ছে
+app.use(cors(corsOptions));
 
 // Session configuration for Passport.js
 app.use(
