@@ -22,6 +22,13 @@ const productSchema = new Schema<TProduct>(
 		additionalInfo: { type: String, trim: true },
 		// Recommended Fields
 		slug: { type: String, required: true, unique: true, trim: true },
+		type: {
+			type: String,
+			enum: ["own", "affiliate"], // Only allow these two values
+			required: true,
+			default: "own",
+		}, // ✅ Product type field
+		affiliateLink: { type: String }, // ✅ Only for affiliate products
 		discountPrice: { type: Number, default: 0, min: 0 },
 		brand: { type: String, trim: true },
 		tags: { type: [String], default: [] },

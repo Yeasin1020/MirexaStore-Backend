@@ -41,7 +41,8 @@ export type TProduct = {
 	reviews: Types.ObjectId[]; // Array of Review IDs
 	rating?: number;
 	totalReviews?: number;
-
+	type: "own" | "affiliate";
+	affiliateLink?: string;
 	// Product Status & Labels
 	status?: 'active' | 'inactive' | 'draft';
 	isFeatured?: boolean;
