@@ -6,7 +6,10 @@ import { CheckoutRoutes } from "../modules/checkout/checkout.route";
 import { ReviewRoutes } from "../modules/review/review.route";
 import { NewsLetterRoute } from "../modules/newsletter/newsletter.route";
 import { CategoryRoutes } from "../modules/category/category.route";
-
+import { ResellerRoutes } from "../modules/reseller/reseller.route";
+import { FollowRoutes } from "../modules/follow/follow.route";
+import { RoutesForReseller } from "../modules/resellerRequest/resellerRequest.route";
+import { CourierRoutes } from "../modules/courier/courier.route";
 const router = Router();
 
 const moduleRoutes = [
@@ -41,6 +44,22 @@ const moduleRoutes = [
   {
     path: '/category',
     route: CategoryRoutes,
+  },
+  {
+    path: "/reseller",
+    route: ResellerRoutes,
+  },
+  {
+    path: "/reseller",
+    route: FollowRoutes,
+  },
+  {
+    path: "/reseller-request",
+    route: RoutesForReseller,
+  },
+  {
+    path: "/courier",
+    route: CourierRoutes
   }
 
 

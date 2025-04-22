@@ -89,7 +89,7 @@ export const sendOrderConfirmationEmail = async ({
     <p><strong>Delivery Note:</strong> ${deliveryNote || "N/A"}</p>
 
     <p style="color: orange;">🚚 Delivery Status: ${status}</p>
-    <p style="text-align: center; margin-top: 30px;">❤️ Thank you for shopping with <strong>MirexaStore</strong>!</p>
+    <p style="text-align: center; margin-top: 30px;">❤️ Thank you for shopping with <strong>CampusNeeds</strong>!</p>
   </div>
 `;
 
@@ -138,13 +138,13 @@ export const sendOrderConfirmationEmail = async ({
     await transporter.sendMail({
       from: process.env.GMAIL_USER,  // Using environment variable for the sender email
       to,
-      subject: "MirexaStore Order Confirmation",
+      subject: "CampusNeeds Order Confirmation",
       html: userEmailHtml,
     });
 
     await transporter.sendMail({
       from: process.env.GMAIL_USER,  // Using environment variable for the sender email
-      to: "admin@mirexastore.com",  // Admin email address
+      to: "admin@campusneeds.com",  // Admin email address
       subject: `New Order Received: ${orderId}`,
       html: adminEmailHtml,
     });
