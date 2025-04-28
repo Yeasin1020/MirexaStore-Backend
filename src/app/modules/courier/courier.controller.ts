@@ -11,8 +11,9 @@ export const requestCourier = async (req: Request, res: Response) => {
 			message: "Courier requested successfully",
 			data: result,
 		});
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (error: any) {
-		console.error("Courier request error:", error);
+
 		res.status(400).json({ message: error.message });
 	}
 };
