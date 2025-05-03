@@ -1,21 +1,19 @@
+// model.js
 import { Schema, model } from 'mongoose';
 import { TUser } from './user.interface';
-
 import config from '../../config';
 import { USER_ROLE } from './user.constants';
-
-// eslint-disable-next-line no-undef, @typescript-eslint/no-var-requires
-const bcrypt = require('bcrypt');
+import bcrypt from 'bcrypt';
 
 const userSchema = new Schema<TUser>(
 	{
 		name: { type: String, required: true },
 		email: { type: String, required: true, unique: true },
-		password: { type: String, required: true, select: false },
-		phone: { type: String, required: true },
+		password: { type: String, required: false, select: false },  // Password is optional for Google users
+		phone: { type: String, required: function () { return !this.googleId; } },  // Only require phone for non-Google users
 		address: { type: String },
 		role: { type: String, required: true, enum: Object.keys(USER_ROLE) },
-		googleId: { type: String, unique: true, sparse: true }, // Optional field
+		googleId: { type: String, unique: true, sparse: true }, // Optional field for Google login users
 	},
 	{
 		toJSON: {
@@ -23,6 +21,7 @@ const userSchema = new Schema<TUser>(
 				delete ret.password;
 				delete ret.__v;
 
+				// Ordered return object
 				const orderedRet = {
 					_id: doc._id,
 					name: doc.name,
@@ -34,24 +33,20 @@ const userSchema = new Schema<TUser>(
 				return orderedRet;
 			},
 		},
-	},
+	}
 );
 
-// Hashing password before saving the user
+// Hashing password before saving the user (for regular users, not Google login)
 userSchema.pre('save', async function (next) {
-	// eslint-disable-next-line @typescript-eslint/no-this-alias
-	const user = this;
-	if (user.isModified('password')) {
-		user.password = await bcrypt.hash(
-			user.password,
-			Number(config.bcrypt_salt_rounds),
-		);
+	if (this.isModified('password') && this.password) {
+		this.password = await bcrypt.hash(this.password, Number(config.bcrypt_salt_rounds));
 	}
 	next();
 });
 
-userSchema.post('save', async function (doc, next) {
-	doc.password = '';
+// Remove password after save
+userSchema.post('save', function (doc, next) {
+	doc.password = '';  // Remove password field after saving to the database
 	next();
 });
 

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import httpStatus from 'http-status';
 import { TLoginUser } from './auth.interface';
 import jwt from 'jsonwebtoken';
@@ -12,7 +11,6 @@ import { isPasswordMatched } from './auth.util';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const googleLogin = async (googleProfile: any) => {
 	try {
-		// Check if the user already exists in the database
 		const existingUser = await User.findOne({ email: googleProfile.email });
 
 		if (existingUser) {
@@ -23,12 +21,12 @@ const googleLogin = async (googleProfile: any) => {
 			};
 		}
 
-		// If the user doesn't exist, create a new user
+		// If the user doesn't exist, create a new user with a default phone value
 		const newUser = await User.create({
 			name: googleProfile.name,
 			email: googleProfile.email,
-			phone: googleProfile.phone || "",
-			address: googleProfile.address || undefined, // Address is now optional
+			phone: googleProfile.phone || "Not provided",  // Provide a default value if phone is missing
+			address: googleProfile.address || undefined,
 			role: "user", // Default role
 			googleId: googleProfile.id,
 		});
@@ -42,6 +40,7 @@ const googleLogin = async (googleProfile: any) => {
 		throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Google login failed');
 	}
 };
+
 
 // Helper function to generate tokens
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -74,13 +73,15 @@ const signup = async (payload: TUser): Promise<any> => {
 	if (user) {
 		throw new AppError(httpStatus.CONFLICT, 'User already exists');
 	}
-	// 👇 Block manual signup as reseller
+
+	// Block manual signup as reseller or admin
 	if (payload.role && payload.role === 'reseller') {
 		throw new AppError(httpStatus.FORBIDDEN, 'You are not allowed to signup as reseller');
 	}
 	if (payload.role && payload.role === 'admin') {
 		throw new AppError(httpStatus.FORBIDDEN, 'You are not allowed to signup as admin');
 	}
+
 	const newUser = await User.create({
 		...payload,
 		role: 'user', // Always default to 'user'
@@ -89,7 +90,6 @@ const signup = async (payload: TUser): Promise<any> => {
 
 	return newUser;
 };
-
 
 // Login logic
 const login = async (payload: TLoginUser) => {
@@ -102,12 +102,6 @@ const login = async (payload: TLoginUser) => {
 	if (!(await isPasswordMatched(payload.password, user.password))) {
 		throw new AppError(httpStatus.UNAUTHORIZED, 'Password not matched');
 	}
-
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const jwtPayload = {
-		email: user.email,
-		role: user.role,
-	};
 
 	const accessToken = generateAccessToken(user);
 	const refreshToken = generateRefreshToken(user);

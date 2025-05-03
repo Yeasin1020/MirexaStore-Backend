@@ -6,49 +6,48 @@ import globalErrorHandler from './app/middlewares/globalErrorhandler';
 import notFound from './app/middlewares/notFound';
 import router from './app/routes';
 import config from './app/config'; // Assuming your config file contains sensitive info
+import './app/config/passport'; // ✅ Make sure Google Strategy is initialized here
 
 const app: Application = express();
 
-// Parsers
-app.use(express.json()); // Parse incoming JSON payloads
-
-// CORS configuration
+// CORS Configuration
 const corsOptions = {
   origin: '*',
   credentials: true,
 };
 
 app.use(cors(corsOptions));
+// Body parser
+app.use(express.json());
 
-// Session configuration for Passport.js
+// Session Configuration
 app.use(
   session({
-    secret: config.google_client_secret || 'your-session-secret', // Ensure your session secret is set securely
-    resave: false, // Do not resave sessions if nothing has changed
-    saveUninitialized: false, // Do not save uninitialized sessions
+    secret: config.session_secret || 'your-fallback-secret', // Use a strong session secret from .env
+    resave: false,
+    saveUninitialized: false,
     cookie: {
-      secure: config.NODE_ENV === 'production', // Use secure cookies in production
-      maxAge: 60 * 60 * 1000, // Set cookie expiration time to 1 hour
+      secure: config.NODE_ENV === 'production', // Cookies should be secure in production (HTTPS)
+      httpOnly: true, // Prevent client-side JS access
+      maxAge: 60 * 60 * 1000, // 1 hour
     },
   })
 );
 
-// Passport initialization
+// Passport Middleware
 app.use(passport.initialize()); // Initialize Passport for authentication
 app.use(passport.session()); // Use Passport session to store user info
 
-// Application routes
-app.use('/api', router); // All API routes start with '/api'
+// Routes
+app.use('/api', router);
 
-// Home route
-app.get("/", (req: Request, res: Response) => {
-  res.send("Deployment successfully done");
+// Home route for checking if the server is up
+app.get('/', (req: Request, res: Response) => {
+  res.send('🚀 Deployment successful!');
 });
 
-// Global error handler middleware
+// Error Handlers
 app.use(globalErrorHandler);
-
-// Not Found handler
 app.use(notFound);
 
 export default app;

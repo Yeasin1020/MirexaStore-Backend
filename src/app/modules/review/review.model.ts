@@ -12,12 +12,22 @@ const reviewSchema = new Schema<TReview>(
 		likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 		replies: [
 			{
-				userId: { type: Schema.Types.ObjectId, ref: 'User', required: true }, // Ensuring userId is required
-				comment: { type: String, required: true }, // Marked as required for consistency
-				userName: { type: String, required: true }, // Ensuring userName is required
+				userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+				comment: { type: String, required: true },
+				userName: { type: String, required: true },
 				timestamp: { type: Date, default: Date.now },
 			},
 		],
+		media: {
+			type: [
+				{
+					url: { type: String, required: true },
+					type: { type: String, enum: ['image', 'video'], required: true },
+				},
+			],
+			required: false,
+			default: undefined, // makes it optional
+		},
 	},
 	{ timestamps: true }
 );

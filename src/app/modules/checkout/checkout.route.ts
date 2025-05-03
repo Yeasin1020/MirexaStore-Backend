@@ -16,4 +16,8 @@ router.get("/order/:userId", CheckoutController.getOrdersByUserId); // Get order
 router.patch("/update-status/:id", authenticate, resellerAdminMiddleware, CheckoutController.updateOrderStatus); // Update order status route
 router.delete("/:orderId", authenticate, adminMiddleware, CheckoutController.deleteOrder); // Delete order route
 
+// router.post('/initiate-payment/:orderId', authenticate, CheckoutController.initiatePayment);
+// router.post("/payment-success/:orderId", CheckoutController.paymentSuccess);
+// router.post("/payment-fail/:orderId", CheckoutController.paymentFail);
+
 export const CheckoutRoutes = router;

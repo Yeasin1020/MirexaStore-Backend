@@ -4,7 +4,7 @@ import { User } from "./user.model";
 
 
 export const getProfile = async (userId: string) => {
-	return await User.findById(userId).select("-password");
+	return await User.findById(userId).select("-password").lean(); // lean() for performance
 };
 
 export const getAllUsers = async () => {

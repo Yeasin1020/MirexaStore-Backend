@@ -1,6 +1,8 @@
 import { TProduct } from "../product/product.interface";
 
 export interface TCheckout {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	_id: any;
 	userId: string;
 	items: {
 		productId: string;

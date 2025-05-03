@@ -7,7 +7,7 @@ import Product from '../product/product.model';
 import Review from './review.model';
 
 const createReview = catchAsync(async (req: Request, res: Response) => {
-	const { productId, rating, comment, userName } = req.body;
+	const { productId, rating, comment, userName, media } = req.body;
 	const userId = req.user._id; // Assuming `req.user` is populated by authentication middleware
 
 	// Create a new review document
@@ -19,6 +19,7 @@ const createReview = catchAsync(async (req: Request, res: Response) => {
 		comment,
 		likes: [],
 		replies: [],
+		media,
 	});
 
 	// Save the review to the database

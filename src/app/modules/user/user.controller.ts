@@ -5,10 +5,15 @@ import { UserServices } from "./user.services";
 import sendResponse from "../../utils/sendResponse";
 
 const getProfile = catchAsync(async (req, res) => {
+	// User data পেতে service function কল করছি
 	const user = await UserServices.getProfile(req.user._id);
+
 	if (!user) {
-		return res.status(404).json({ message: "User not found" });
+		// যদি user না থাকে, তাহলে 404 return
+		return res.status(httpStatus.NOT_FOUND).json({ message: "User not found" });
 	}
+
+	// সঠিক ভাবে user data send করছি response এর মাধ্যমে
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		success: true,
