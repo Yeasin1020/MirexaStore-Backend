@@ -49,12 +49,12 @@ const googleCallback = (req: Request, res: Response) => {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	passport.authenticate("google", { failureRedirect: "/login" }, async (err: any, user: any) => {
 		if (err) {
-			console.error("Google login error:", err);
+
 			return res.status(500).json({ message: "Internal server error", error: err });
 		}
 
 		if (!user) {
-			console.error("No user found after Google login.");
+
 			return res.status(401).json({ message: "Google login failed, no user found" });
 		}
 
@@ -70,9 +70,9 @@ const googleCallback = (req: Request, res: Response) => {
 		}
 
 		try {
-			console.log("User authenticated, proceeding to login service...");
+
 			const { accessToken, refreshToken } = await AuthServices.googleLogin(user);
-			console.log("Tokens received successfully.");
+
 
 			res.cookie("refreshToken", refreshToken, {
 				httpOnly: true,
