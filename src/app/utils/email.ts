@@ -131,8 +131,8 @@ export const sendOrderConfirmationEmail = async ({
     <h3>🚚 Delivery Status: <span style="color: orange;">Pending</span></h3>
   </div>
 `;
-  // ✅ Reseller Email HTML (same as adminEmailHtml)
-  const resellerEmailHtml = adminEmailHtml;
+  // ✅ seller Email HTML (same as adminEmailHtml)
+  const sellerEmailHtml = adminEmailHtml;
   try {
     // Send email based on the order status
     await transporter.sendMail({
@@ -148,14 +148,14 @@ export const sendOrderConfirmationEmail = async ({
       subject: `New Order Received: ${orderId}`,
       html: adminEmailHtml,
     });
-    // ✅ Send to Reseller
-    const resellerEmail = items?.[0]?.sellerEmail;
-    if (resellerEmail) {
+    // ✅ Send to seller
+    const sellerEmails = items?.[0]?.sellerEmail;
+    if (sellerEmails) {
       await transporter.sendMail({
         from: process.env.GMAIL_USER,
-        to: resellerEmail,
+        to: sellerEmails,
         subject: `You Have a New Order: ${orderId}`,
-        html: resellerEmailHtml,
+        html: sellerEmailHtml,
       });
     }
 

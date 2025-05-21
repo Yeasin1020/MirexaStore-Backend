@@ -252,9 +252,9 @@
 // 		order.adminApprovalDate = new Date(); // Add approval date
 // 		await order.save();
 
-// 		// Optionally, assign reseller if needed
-// 		if (!order.paymentAssignedToReseller && order.resellerId) {
-// 			order.paymentAssignedToReseller = true;  // Assign payment to reseller
+// 		// Optionally, assign seller if needed
+// 		if (!order.paymentAssignedToseller && order.sellerId) {
+// 			order.paymentAssignedToseller = true;  // Assign payment to seller
 // 			await order.save();
 // 		}
 

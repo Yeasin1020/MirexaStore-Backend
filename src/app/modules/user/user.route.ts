@@ -10,6 +10,6 @@ router.get("/:id", authenticate, UserControllers.getUserById);
 router.get("/", authenticate, adminMiddleware, UserControllers.getAllUsers);
 router.delete("/:id", authenticate, adminMiddleware, UserControllers.deleteUser);
 router.patch("/:id/role", authenticate, adminMiddleware, UserControllers.makeAdmin);
-router.patch("/:id/role/reseller", authenticate, adminMiddleware, UserControllers.makeReseller);
+router.patch("/:id/role/seller", authenticate, adminMiddleware, UserControllers.makeseller);
 
 export const UserRoutes = router;

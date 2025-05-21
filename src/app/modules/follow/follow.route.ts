@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post('/follow', authenticate, handleFollow);
 router.post('/unfollow', authenticate, handleUnfollow);
-router.get('/followers/:resellerId', handleGetFollowersCount);
+router.get('/followers/:sellerId', handleGetFollowersCount);
 router.get('/is-following', authenticate, handleIsFollowing);
 
 export const FollowRoutes = router;

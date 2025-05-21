@@ -36,8 +36,8 @@
 
 // 	// Payment fields
 // 	paymentStatus: "Pending" | "Success" | "Failed" | "Canceled";
-// 	paymentAssignedToReseller: boolean;
-// 	resellerId: string | null;
+// 	paymentAssignedToseller: boolean;
+// 	sellerId: string | null;
 // 	paymentApprovedByAdmin: boolean;
 // 	adminId: string | null;
 // 	adminApprovalDate: Date | null;
@@ -89,8 +89,8 @@
 // 			enum: ["Pending", "Success", "Failed", "Canceled"],
 // 			default: "Pending",
 // 		},
-// 		paymentAssignedToReseller: { type: Boolean, default: false },
-// 		resellerId: { type: String, default: null },
+// 		paymentAssignedToseller: { type: Boolean, default: false },
+// 		sellerId: { type: String, default: null },
 // 		paymentApprovedByAdmin: { type: Boolean, default: false },
 // 		adminId: { type: String, default: null },
 // 		adminApprovalDate: { type: Date, default: null },

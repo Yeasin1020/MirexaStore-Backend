@@ -74,9 +74,9 @@ const signup = async (payload: TUser): Promise<any> => {
 		throw new AppError(httpStatus.CONFLICT, 'User already exists');
 	}
 
-	// Block manual signup as reseller or admin
-	if (payload.role && payload.role === 'reseller') {
-		throw new AppError(httpStatus.FORBIDDEN, 'You are not allowed to signup as reseller');
+	// Block manual signup as seller or admin
+	if (payload.role && payload.role === 'seller') {
+		throw new AppError(httpStatus.FORBIDDEN, 'You are not allowed to signup as seller');
 	}
 	if (payload.role && payload.role === 'admin') {
 		throw new AppError(httpStatus.FORBIDDEN, 'You are not allowed to signup as admin');

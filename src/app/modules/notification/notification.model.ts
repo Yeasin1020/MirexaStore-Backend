@@ -8,7 +8,7 @@ const notificationSchema = new Schema(
 		link: { type: String },
 		isRead: { type: Boolean, default: false },
 		triggeredBy: { type: Schema.Types.ObjectId, ref: 'User' },
-		reseller: { type: Schema.Types.ObjectId, ref: 'Reseller' },
+		seller: { type: Schema.Types.ObjectId, ref: 'Seller' },
 	},
 	{ timestamps: true }
 );

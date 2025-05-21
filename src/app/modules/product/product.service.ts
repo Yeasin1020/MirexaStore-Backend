@@ -57,8 +57,32 @@ const getFilteredProducts = async (category?: string, minPrice?: number, maxPric
 
 
 const getAllProductsFromDb = async () => {
-	return await Product.find({ status: 'active' }); // Retrieve only active products
+	return await Product.aggregate([
+		{
+			$match: { status: 'active' } // Only active products
+		},
+		{
+			$lookup: {
+				from: 'reviews', // collection name in MongoDB
+				localField: '_id',
+				foreignField: 'productId',
+				as: 'reviews'
+			}
+		},
+		{
+			$addFields: {
+				averageRating: { $avg: '$reviews.rating' },
+				totalReviews: { $size: '$reviews' }
+			}
+		},
+		{
+			$project: {
+				reviews: 0 // exclude full reviews array if not needed
+			}
+		}
+	]);
 };
+
 
 
 const getProductBySlug = async (slug: string) => {

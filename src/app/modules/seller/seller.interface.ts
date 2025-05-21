@@ -1,5 +1,5 @@
-// ✅ Interface (reseller.interface.ts)
-export type TResellerProfile = {
+// ✅ Interface (seller.interface.ts)
+export type TSellerProfile = {
 	role: unknown;
 	userEmail: string;
 	brand: {

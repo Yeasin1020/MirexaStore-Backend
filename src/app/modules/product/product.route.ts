@@ -1,11 +1,11 @@
 import express from 'express';
 import authenticate from '../../middlewares/authenticate';
 import { ProductController } from './product.controller';
-import resellerAdminMiddleware from '../../middlewares/resellerAdminAuthorization';
+import sellerAdminMiddleware from '../../middlewares/sellerAdminAuthorization';
 
 const router = express.Router();
 
-router.post('/', authenticate, resellerAdminMiddleware, ProductController.createProduct);
+router.post('/', authenticate, sellerAdminMiddleware, ProductController.createProduct);
 router.get('/filter', ProductController.getFilteredProducts);
 router.get('/', ProductController.getAllProducts);
 router.get('/history/:id', ProductController.getProductById);

@@ -80,7 +80,7 @@ const googleCallback = (req: Request, res: Response) => {
 			});
 
 			// ⚠️ Don't encode again — already encoded by frontend
-			const redirectURL = `https://campus-needs.vercel.app/login?token=${accessToken}&redirect=${redirectPath}`;
+			const redirectURL = `https://mirexa-store.vercel.app/login?token=${accessToken}&redirect=${redirectPath}`;
 			res.redirect(redirectURL);
 		} catch (serviceError) {
 			console.error("Error during Google login service:", serviceError);

@@ -1,8 +1,8 @@
 
 import { Schema, model } from 'mongoose';
-import { TResellerProfile } from './reseller.interface';
+import { TSellerProfile } from './seller.interface';
 
-const resellerSchema = new Schema<TResellerProfile>(
+const sellerSchema = new Schema<TSellerProfile>(
 	{
 		userEmail: { type: String, required: true, unique: true },
 		brand: {
@@ -26,4 +26,4 @@ const resellerSchema = new Schema<TResellerProfile>(
 	{ timestamps: true }
 );
 
-export const Reseller = model<TResellerProfile>('Reseller', resellerSchema);
+export const Seller = model<TSellerProfile>('Seller', sellerSchema);
