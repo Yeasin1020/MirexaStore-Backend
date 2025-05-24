@@ -76,6 +76,29 @@ const getAllProducts = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const getAffiliateProducts = catchAsync(async (req: Request, res: Response) => {
+	const products = await ProductService.getAffiliateProductsFromDb();
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: 'Affiliate products retrieved successfully',
+		data: products,
+	});
+});
+
+
+const getInactiveAndDraftProducts = catchAsync(
+	async (req: Request, res: Response) => {
+		const products = await ProductService.getInactiveAndDraftProductsFromDb();
+
+		sendResponse(res, {
+			statusCode: httpStatus.OK,
+			success: true,
+			message: 'Inactive and Draft products retrieved successfully',
+			data: products,
+		});
+	}
+);
 // Get Product by Slug
 const getProductBySlug = async (req: Request, res: Response) => {
 	try {
@@ -157,17 +180,26 @@ const getRelatedProducts = catchAsync(async (req: Request, res: Response) => {
 
 const updateProductStatus = catchAsync(async (req: Request, res: Response) => {
 	const { id } = req.params;
+	const { status } = req.body;
 
-	// Update product status to 'inactive'
-	const updatedProduct = await ProductService.updateProductStatus(id);
+	const validStatuses = ['active', 'inactive', 'draft'];
+	if (!validStatuses.includes(status)) {
+		return res.status(httpStatus.BAD_REQUEST).json({
+			success: false,
+			message: 'Invalid status value. Must be one of: active, inactive, draft.',
+		});
+	}
+
+	const updatedProduct = await ProductService.updateProductStatus(id, status);
 
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		success: true,
-		message: 'Product status updated to inactive',
+		message: `Product status updated to ${status}`,
 		data: updatedProduct,
 	});
 });
+
 
 export const ProductController = {
 	createProduct,
@@ -176,6 +208,8 @@ export const ProductController = {
 	getProductByCategorySlug,
 	getFilteredProducts,
 	getAllProducts,
+	getAffiliateProducts,
+	getInactiveAndDraftProducts,
 	getProductById,
 	updateProduct,
 	deleteProduct,

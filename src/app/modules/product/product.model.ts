@@ -63,7 +63,7 @@ const productSchema = new Schema<TProduct>(
 		totalReviews: { type: Number, default: 0 },
 
 		// Product Status & Labels
-		status: { type: String, enum: ['active', 'inactive', 'draft'], default: 'active' },
+		status: { type: String, enum: ['active', 'inactive', 'draft'], default: 'draft' },
 		isFeatured: { type: Boolean, default: false },
 		isNewArrival: { type: Boolean, default: false },
 

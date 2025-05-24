@@ -3,13 +3,62 @@
 import { Types } from "mongoose";
 import { TProduct } from "./product.interface";
 import Product from "./product.model";
+import { sendEmail } from "../../utils/sendEmail";
 
+// const createProductIntoDb = async (productData: Partial<TProduct>) => {
+// 	const newProduct = new Product(productData);
+// 	await newProduct.save();
+// 	return newProduct;
+// };
 const createProductIntoDb = async (productData: Partial<TProduct>) => {
 	const newProduct = new Product(productData);
 	await newProduct.save();
+
+	// 🔔 Email to Seller
+	if (newProduct.sellerEmail) {
+		const sellerName = newProduct?.sellerName || 'Seller';
+		const productName = newProduct?.name || 'your product';
+
+		const subject = `📝 Product Submission Received: ${productName}`;
+		const html = `
+			<div style="font-family: Arial, sans-serif; padding: 16px; color: #333;">
+				<h2>Hello ${sellerName},</h2>
+				<p>Thank you for submitting <strong>${productName}</strong> to Mirexa Marketplace.</p>
+				<p>✅ Your product is currently <strong>under review</strong> and will be reviewed by our admin team shortly.</p>
+				<p>You’ll receive an email as soon as your product is approved and made live.</p>
+				<br/>
+				<p style="font-size: 14px; color: #888;">Regards,<br/>Mirexa Marketplace Team</p>
+			</div>
+		`;
+
+		await sendEmail(newProduct?.sellerEmail, subject, html);
+	}
+
+	// 🔔 Email to Admin
+	const adminEmail = "mdeasinsarkar1000@gmail.com"; // 📌 Set this in your .env
+	if (adminEmail) {
+		const productName = newProduct?.name || 'a product';
+		const sellerName = newProduct?.sellerName || 'Unknown Seller';
+		const sellerEmail = newProduct?.sellerEmail || 'No Email';
+
+		const subject = `🔔 New Product Pending Review: ${productName}`;
+		const html = `
+			<div style="font-family: Arial, sans-serif; padding: 16px; color: #333;">
+				<h2>New Product Submission</h2>
+				<p><strong>Product:</strong> ${productName}</p>
+				<p><strong>Seller:</strong> ${sellerName}</p>
+				<p><strong>Email:</strong> ${sellerEmail}</p>
+				<p>Please review and approve this product from the admin dashboard.</p>
+				<br/>
+				<p style="font-size: 14px; color: #888;">System Notification – Mirexa Marketplace</p>
+			</div>
+		`;
+
+		await sendEmail(adminEmail, subject, html);
+	}
+
 	return newProduct;
 };
-
 const getProductsByCategory = async (category: string) => {
 	const products = await Product.find({ category }).lean().exec();
 
@@ -83,6 +132,65 @@ const getAllProductsFromDb = async () => {
 	]);
 };
 
+const getAffiliateProductsFromDb = async () => {
+	return await Product.aggregate([
+		{
+			$match: {
+				status: 'active',
+				affiliateLink: { $exists: true, $ne: '' } // Only products with a non-empty affiliate link
+			}
+		},
+		{
+			$lookup: {
+				from: 'reviews',
+				localField: '_id',
+				foreignField: 'productId',
+				as: 'reviews'
+			}
+		},
+		{
+			$addFields: {
+				averageRating: { $avg: '$reviews.rating' },
+				totalReviews: { $size: '$reviews' }
+			}
+		},
+		{
+			$project: {
+				reviews: 0
+			}
+		}
+	]);
+};
+
+
+const getInactiveAndDraftProductsFromDb = async () => {
+	return await Product.aggregate([
+		{
+			$match: {
+				status: { $in: ['inactive', 'draft'] } // Match inactive or draft
+			}
+		},
+		{
+			$lookup: {
+				from: 'reviews',
+				localField: '_id',
+				foreignField: 'productId',
+				as: 'reviews'
+			}
+		},
+		{
+			$addFields: {
+				averageRating: { $avg: '$reviews.rating' },
+				totalReviews: { $size: '$reviews' }
+			}
+		},
+		{
+			$project: {
+				reviews: 0
+			}
+		}
+	]);
+};
 
 
 const getProductBySlug = async (slug: string) => {
@@ -151,23 +259,103 @@ const getRelatedProducts = async (category: string, excludeId: string) => {
 };
 
 // New service method to update product status to 'inactive'
-const updateProductStatus = async (id: string) => {
+// const updateProductStatus = async (id: string, newStatus: 'active' | 'inactive' | 'draft') => {
+// 	if (!Types.ObjectId.isValid(id)) {
+// 		throw new Error("Invalid product ID");
+// 	}
+
+// 	const allowedStatuses = ['active', 'inactive', 'draft'];
+// 	if (!allowedStatuses.includes(newStatus)) {
+// 		throw new Error("Invalid status value");
+// 	}
+
+// 	const updatedProduct = await Product.findByIdAndUpdate(
+// 		id,
+// 		{ status: newStatus },
+// 		{ new: true }
+// 	).lean().exec();
+
+// 	if (!updatedProduct) {
+// 		throw new Error("Product not found");
+// 	}
+
+// 	return updatedProduct;
+// };
+
+// New service method to update product status to 'inactive'
+export const updateProductStatus = async (
+	id: string,
+	newStatus: 'active' | 'inactive' | 'draft'
+) => {
 	if (!Types.ObjectId.isValid(id)) {
-		throw new Error("Invalid product ID");
+		throw new Error('Invalid product ID');
+	}
+
+	const allowedStatuses = ['active', 'inactive', 'draft'];
+	if (!allowedStatuses.includes(newStatus)) {
+		throw new Error('Invalid status value');
 	}
 
 	const updatedProduct = await Product.findByIdAndUpdate(
 		id,
-		{ status: 'inactive' }, // Set status to 'inactive'
+		{ status: newStatus },
 		{ new: true }
 	).lean().exec();
 
 	if (!updatedProduct) {
-		throw new Error("Product not found");
+		throw new Error('Product not found');
 	}
+
+	// ✅ Send email based on the new status
+	if (updatedProduct.sellerEmail) {
+		const sellerName = updatedProduct.sellerName || 'Seller';
+		const productName = updatedProduct.name || 'Your product';
+
+		// 🎨 Email content based on status
+		let subject = '';
+		let messageBody = '';
+
+		switch (newStatus) {
+			case 'active':
+				subject = `✅ Product Approved: ${productName}`;
+				messageBody = `
+          <p>Great news! Your product <strong>${productName}</strong> has been approved and is now <strong>active</strong> on the marketplace.</p>
+          <p>Customers can now view and purchase your product.</p>
+        `;
+				break;
+
+			case 'inactive':
+				subject = `⚠️ Product Inactivated: ${productName}`;
+				messageBody = `
+          <p>Your product <strong>${productName}</strong> has been marked as <strong>inactive</strong>.</p>
+          <p>This means it’s currently not visible to customers. You can update it anytime from your seller dashboard.</p>
+        `;
+				break;
+
+			case 'draft':
+				subject = `📝 Product Moved to Draft: ${productName}`;
+				messageBody = `
+          <p>Your product <strong>${productName}</strong> has been moved back to <strong>draft</strong> status.</p>
+          <p>Please review the listing and publish it again once ready.</p>
+        `;
+				break;
+		}
+
+		const emailHtml = `
+      <div style="font-family: Arial, sans-serif; padding: 16px; color: #333;">
+        <h2>Hello ${sellerName},</h2>
+        ${messageBody}
+        <p>Thank you for using <strong>Mirexa Marketplace</strong>.</p>
+        <br/>
+        <p style="font-size: 14px; color: #888;">Regards,<br/>Mirexa Marketplace Team</p>
+      </div>
+    `;
+
+		await sendEmail(updatedProduct.sellerEmail, subject, emailHtml);
+	}
+
 	return updatedProduct;
 };
-
 
 export const ProductService = {
 	createProductIntoDb,
@@ -176,6 +364,8 @@ export const ProductService = {
 	getProductByCategorySlug,
 	getFilteredProducts,
 	getAllProductsFromDb,
+	getAffiliateProductsFromDb,
+	getInactiveAndDraftProductsFromDb,
 	getProductById,
 	updateProductIntoDb,
 	deleteProductFromDb,
