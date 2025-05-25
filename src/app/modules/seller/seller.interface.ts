@@ -1,7 +1,10 @@
-// ✅ Interface (seller.interface.ts)
 export type TSellerProfile = {
 	role: unknown;
 	userEmail: string;
+
+	// ⏰ Seller account expiry
+	validTill: Date;
+
 	brand: {
 		name: string;
 		slug: string;
@@ -12,10 +15,12 @@ export type TSellerProfile = {
 		location: string;
 		phone: string;
 		whatsapp: string;
+
 		socialLinks: {
 			facebook?: string;
 			instagram?: string;
 		};
+
 		rating?: number;
 		totalReviews?: number;
 		verified?: boolean;
