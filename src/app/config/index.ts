@@ -20,6 +20,7 @@ const requiredEnvVariables = [
   'SSLCommerzStorePassword',
   'SSLCommerzStoreId',
   'DOMAIN_URL',
+  'ADMIN_EMAIL',
 ];
 
 requiredEnvVariables.forEach((key) => {
@@ -40,6 +41,7 @@ export default {
   google_client_id: process.env.GOOGLE_CLIENT_ID!,
   google_client_secret: process.env.GOOGLE_CLIENT_SECRET!,
   google_callback_url: process.env.GOOGLE_CALLBACK_URL!,
+  admin_email: process.env.ADMIN_EMAIL!,
   session_secret: process.env.SESSION_SECRET!,
   sslcommerz: {
     sandbox: process.env.SSLCommerzSandbox === 'true',

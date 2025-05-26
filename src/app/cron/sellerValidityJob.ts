@@ -3,7 +3,7 @@ import { Seller } from '../modules/seller/seller.model';
 import Product from '../modules/product/product.model';
 
 // ⏰ Run every minute to check seller status
-cron.schedule('*/5 * * * *', async () => {
+cron.schedule('*/30 * * * *', async () => {
 	console.log('🔄 Checking seller statuses...');
 
 	const now = new Date();
