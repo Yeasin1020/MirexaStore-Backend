@@ -8,29 +8,28 @@ const primaryColor = "#F6550C";
 
 export const SubscriptionService = {
 	getAllPlans: async () => {
-		console.log("📦 Fetching all subscription plans...");
+
 		return SubscriptionPlan.find({});
 	},
 
 	createPlan: async (data: TSubscriptionPlan) => {
-		console.log("🛠 Creating new plan with data:", data);
+
 		return SubscriptionPlan.create(data);
 	},
 
 	createRequest: async (data: TSubscriptionRequest) => {
-		console.log("📥 New subscription request incoming...", data);
 
 		const exists = await SubscriptionRequest.findOne({ transactionId: data.transactionId });
 		if (exists) {
-			console.error("⚠️ Duplicate transaction ID:", data.transactionId);
+
 			throw new Error("Duplicate transaction ID. Already used.");
 		}
 
 		const request = await SubscriptionRequest.create(data);
-		console.log("✅ Subscription request saved:", request._id);
+
 
 		// Notify admin
-		console.log("📧 Sending new request notification email to admin...");
+
 		await sendEmail({
 			to: config.admin_email!,
 			subject: "📥 New Subscription Request Received",
@@ -79,12 +78,12 @@ export const SubscriptionService = {
 	},
 
 	getRequestsBySeller: async (email: string) => {
-		console.log(`📨 Fetching requests for seller: ${email}`);
+
 		return SubscriptionRequest.find({ sellerEmail: email }).sort({ createdAt: -1 });
 	},
 
 	getPendingRequests: async () => {
-		console.log("⏳ Fetching all pending subscription requests...");
+
 		return SubscriptionRequest.find({ status: "pending" });
 	},
 
@@ -111,7 +110,7 @@ export const SubscriptionService = {
 		seller.validTill = validFrom;
 		await seller.save();
 
-		console.log("📧 Sending approval email to seller...");
+
 		await sendEmail({
 			to: req?.sellerEmail,
 			subject: "✅ Your Subscription Has Been Approved",
@@ -159,7 +158,7 @@ export const SubscriptionService = {
 		req.status = "rejected";
 		await req.save();
 
-		console.log("📧 Sending rejection email to seller...");
+
 		await sendEmail({
 			to: req?.sellerEmail,
 			subject: "❌ Your Subscription Request Was Rejected",
