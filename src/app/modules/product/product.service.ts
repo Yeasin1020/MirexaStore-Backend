@@ -60,7 +60,12 @@ const createProductIntoDb = async (productData: Partial<TProduct>) => {
 	return newProduct;
 };
 const getProductsByCategory = async (category: string) => {
-	const products = await Product.find({ category }).lean().exec();
+	const products = await Product.find({
+		category,
+		status: "active", // ✅ Only get active products
+	})
+		.lean()
+		.exec();
 
 	if (!products.length) {
 		throw new Error("No products found for this category");
@@ -68,6 +73,7 @@ const getProductsByCategory = async (category: string) => {
 
 	return products;
 };
+
 
 
 const getProductByCategorySlug = async (category: string, slug: string) => {
