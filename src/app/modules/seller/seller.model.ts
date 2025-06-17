@@ -5,16 +5,17 @@ const sellerSchema = new Schema<TSellerProfile>(
 	{
 		userEmail: { type: String, required: true, unique: true },
 
-		// ⏰ Seller validity expiry date - default 1 month from creation
+		// ⏰ Seller validity expiry date - default 7days from creation
 		validTill: {
 			type: Date,
 			required: true,
 			default: () => {
 				const now = new Date();
-				now.setMonth(now.getMonth() + 1); // 1 month default validity
+				now.setDate(now.getDate() + 7); // default validity = 7 days
 				return now;
 			},
 		},
+
 
 		brand: {
 			name: { type: String, required: true },
@@ -26,6 +27,7 @@ const sellerSchema = new Schema<TSellerProfile>(
 			location: { type: String, required: true },     // required
 			phone: { type: String, required: true },        // required
 			whatsapp: { type: String, required: true },     // required
+			bkash: { type: String, required: true },     // required
 			socialLinks: {
 				facebook: { type: String, required: true },   // required
 				instagram: { type: String, required: true },  // required

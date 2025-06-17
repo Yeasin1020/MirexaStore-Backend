@@ -15,6 +15,7 @@ export type TSellerProfile = {
 		location: string;
 		phone: string;
 		whatsapp: string;
+		bkash: string;
 
 		socialLinks: {
 			facebook?: string;

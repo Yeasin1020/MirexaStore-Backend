@@ -13,6 +13,7 @@ export const SellerService = {
 		const user = await User.findById(userId);
 		if (!user) throw new Error('User not found');
 
+
 		// 2️⃣ Verify the email matches a user
 		const existingUser = await User.findOne({ email: data.userEmail });
 		if (!existingUser) throw new Error('No user exists with this email');
