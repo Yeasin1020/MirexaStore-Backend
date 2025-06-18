@@ -17,7 +17,7 @@ export interface TCheckout {
 	shippingCost: number;
 	grandTotal: number;
 	status: string;
-	orderDate: Date;  // Change to Date type
+	orderDate: Date;
 	shippingDetails: {
 		fullName: string;
 		phone: string;
@@ -32,6 +32,10 @@ export interface TCheckout {
 	discountApplied?: number;
 	isFirstOrderDiscountUsed?: boolean;
 	totalPrice: number;
+
+	// 🆕 Added Fields
+	paymentMethod: "cod" | "bkash";
+	transactionId?: string;
 }
 
 export interface TOrder {
@@ -55,4 +59,8 @@ export interface TOrder {
 	discountApplied?: number;
 	isFirstOrderDiscountUsed?: boolean;
 	totalPrice: number;
+
+	// 🆕 Added Fields
+	paymentMethod: "cod" | "bkash";
+	transactionId?: string;
 }

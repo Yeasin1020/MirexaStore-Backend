@@ -139,6 +139,10 @@ export interface TCheckout {
 	discountApplied?: number;
 	isFirstOrderDiscountUsed?: boolean;
 	totalPrice: number;
+
+	// 🆕 Newly Added
+	paymentMethod: "cod" | "bkash";
+	transactionId?: string;
 }
 
 const checkoutSchema = new Schema<TCheckout>(
@@ -154,7 +158,7 @@ const checkoutSchema = new Schema<TCheckout>(
 				color: { type: String },
 				size: { type: String },
 				name: { type: String },
-				productImage: { type: [String], default: [] }
+				productImage: { type: [String], default: [] },
 			},
 		],
 		totalAmount: { type: Number, required: true },
@@ -176,6 +180,20 @@ const checkoutSchema = new Schema<TCheckout>(
 		discountApplied: { type: Number, default: 0 },
 		isFirstOrderDiscountUsed: { type: Boolean, default: false },
 		totalPrice: { type: Number, required: true },
+
+		// 🆕 New fields added below
+		paymentMethod: {
+			type: String,
+			enum: ["cod", "bkash"],
+			required: true,
+		},
+		transactionId: {
+			type: String,
+			// eslint-disable-next-line no-unused-vars
+			required: function (this: TCheckout) {
+				return this.paymentMethod === "bkash";
+			},
+		},
 	},
 	{ timestamps: true }
 );
