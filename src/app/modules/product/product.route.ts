@@ -13,11 +13,12 @@ router.get('/affiliate-products', authenticate, sellerAdminMiddleware, ProductCo
 router.get('/inactive-draft', authenticate, sellerAdminMiddleware, ProductController.getInactiveAndDraftProducts);
 router.get('/history/:id', ProductController.getProductById);
 router.get('/details/:id', ProductController.getProductById);
+router.get("/search-suggestions", ProductController.getSearchSuggestions);
 router.get('/category/:category', ProductController.getProductsByCategory);
 router.get('/:slug', ProductController.getProductBySlug);
 
 router.get('/category/:category/:slug', ProductController.getProductByCategorySlug); // Category -> Slug URL structure
-// router.get("/search-suggestions", ProductController.getSearchSuggestions);
+
 router.put('/:id', authenticate, ProductController.updateProduct);
 router.patch('/status/:id', authenticate, adminMiddleware, ProductController.updateProductStatus);
 router.delete('/:id', authenticate, ProductController.deleteProduct);

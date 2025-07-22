@@ -1,5 +1,3 @@
-// routes/checkout.route.ts
-
 import express from "express";
 import authenticate from "../../middlewares/authenticate";
 import { CheckoutController } from "./checkout.controller";
@@ -8,16 +6,28 @@ import sellerAdminMiddleware from "../../middlewares/sellerAdminAuthorization";
 
 const router = express.Router();
 
-router.post("/", authenticate, CheckoutController.createOrder); // Place order route
-router.post("/check-first-order/:userId", CheckoutController.getFirstOrderCheckByUserId); // Check if first order
-router.get("/:orderId", authenticate, sellerAdminMiddleware, CheckoutController.getOrderById); // Get order details
-router.get("/", authenticate, CheckoutController.getAllOrders); // Get all orders
-router.get("/order/:userId", CheckoutController.getOrdersByUserId); // Get orders by user ID
-router.patch("/update-status/:id", authenticate, sellerAdminMiddleware, CheckoutController.updateOrderStatus); // Update order status route
-router.delete("/:orderId", authenticate, adminMiddleware, CheckoutController.deleteOrder); // Delete order route
+// ✅ Place a new order
+router.post("/", authenticate, CheckoutController.createOrder);
 
-// router.post('/initiate-payment/:orderId', authenticate, CheckoutController.initiatePayment);
-// router.post("/payment-success/:orderId", CheckoutController.paymentSuccess);
-// router.post("/payment-fail/:orderId", CheckoutController.paymentFail);
+// ✅ Check if it's the user's first order
+router.post("/check-first-order/:userId", CheckoutController.getFirstOrderCheckByUserId);
+
+// ✅ Get specific order by ID (protected for sellers/admins)
+router.get("/:orderId", authenticate, sellerAdminMiddleware, CheckoutController.getOrderById);
+
+// ✅ Get all orders (protected for authenticated users)
+router.get("/", authenticate, CheckoutController.getAllOrders);
+
+// ✅ Get orders by user ID
+router.get("/order/:userId", CheckoutController.getOrdersByUserId);
+
+// ✅ Update order status (e.g. Shipped, Delivered)
+router.patch("/update-status/:id", authenticate, sellerAdminMiddleware, CheckoutController.updateOrderStatus);
+
+// ✅ NEW: Mark order as paid to seller via Admin bKash
+router.patch("/pay-seller/:orderId", authenticate, adminMiddleware, CheckoutController.markOrderAsPaidToSeller);
+
+// ✅ Delete an order (admin only)
+router.delete("/:orderId", authenticate, adminMiddleware, CheckoutController.deleteOrder);
 
 export const CheckoutRoutes = router;

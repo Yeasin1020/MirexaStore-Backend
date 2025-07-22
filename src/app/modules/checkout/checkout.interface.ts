@@ -1,4 +1,3 @@
-import { TProduct } from "../product/product.interface";
 
 export interface TCheckout {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,10 +32,16 @@ export interface TCheckout {
 	isFirstOrderDiscountUsed?: boolean;
 	totalPrice: number;
 
-	// 🆕 Added Fields
-	paymentMethod: "cod" | "bkash";
+	// 🆕 Updated Fields
+	paymentMethod: "cod" | "bkash" | "adminBkash";
 	transactionId?: string;
+
+	// ✅ NEW for admin tracking
+	adminBkashStatus?: "pending" | "received" | "paidToSeller";
 }
+
+
+import { TProduct } from "../product/product.interface";
 
 export interface TOrder {
 	userId: string;
@@ -60,7 +65,11 @@ export interface TOrder {
 	isFirstOrderDiscountUsed?: boolean;
 	totalPrice: number;
 
-	// 🆕 Added Fields
-	paymentMethod: "cod" | "bkash";
+	// 🆕 Updated Fields
+	paymentMethod: "cod" | "bkash" | "adminBkash";
 	transactionId?: string;
+
+	// ✅ NEW for admin tracking
+	adminBkashStatus?: "pending" | "received" | "paidToSeller";
 }
+

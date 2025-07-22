@@ -11,11 +11,11 @@ const productSchema = new Schema<TProduct>(
 	{
 		// Basic Fields
 		name: { type: String, required: true, trim: true },
-		description: { type: String, required: true, trim: true },
+		description: { type: String, required: true },
 		price: { type: Number, required: true, min: 0 }, // Base price (can be overridden in variants)
 		stockQuantity: { type: Number, required: true, min: 0, default: 0 }, // Total stock (optional summary)
 		category: { type: String, required: true, trim: true },
-		longDescription: { type: String, trim: true },  // Added long description
+		longDescription: { type: String },  // Added long description
 		materials: { type: String, trim: true },        // Added materials field
 		careInstructions: { type: String, trim: true }, // Added care instructions field
 		specifications: { type: String, trim: true },    // Added specifications field

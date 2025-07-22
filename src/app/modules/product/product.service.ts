@@ -220,7 +220,27 @@ const getProductById = async (id: string) => {
 
 	return product;
 };
-// const getSearchSuggestionsService = async (query: string) => {
+const getSearchSuggestionsService = async (query: string) => {
+	if (!query || typeof query !== "string" || query.trim().length === 0) {
+		throw new Error("Query must be a non-empty string");
+	}
+
+	const regex = new RegExp(query, "i");
+
+	const matchedProducts = await Product.find({
+		name: regex,
+		status: "active",
+		$or: [
+			{ isDeleted: false },
+			{ isDeleted: { $exists: false } }
+		]
+	})
+		.limit(10)
+		.select("name slug productImages price discountPrice category")
+		.lean();
+
+	return matchedProducts;
+};
 // 	const regex = new RegExp(query, "i"); // Case-insensitive match
 
 // 	const suggestions = await Product.find(
@@ -373,6 +393,7 @@ export const ProductService = {
 	getAffiliateProductsFromDb,
 	getInactiveAndDraftProductsFromDb,
 	getProductById,
+	getSearchSuggestionsService,
 	updateProductIntoDb,
 	deleteProductFromDb,
 	getRelatedProducts,

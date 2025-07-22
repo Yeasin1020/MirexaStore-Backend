@@ -122,22 +122,21 @@ const getProductById = catchAsync(async (req: Request, res: Response) => {
 		data: product,
 	});
 });
-// const getSearchSuggestions = async (req: Request, res: Response) => {
-// 	try {
-// 		const { query } = req.query;
+const getSearchSuggestions = async (req: Request, res: Response) => {
+	try {
+		const { query } = req.query;
 
-// 		if (!query || typeof query !== "string" || query.trim().length === 0) {
-// 			return res.status(400).json({ message: "Query parameter is required and should be a non-empty string." });
-// 		}
+		if (!query || typeof query !== 'string' || query.trim().length === 0) {
+			return res.status(400).json({ message: 'Query is required' });
+		}
 
-// 		const suggestions = await ProductService.getSearchSuggestionsService(query);
+		const suggestions = await ProductService.getSearchSuggestionsService(query);
+		return res.status(200).json(suggestions); // must be array of strings
+	} catch (error) {
 
-// 		res.status(200).json(suggestions);
-// 	} catch (error) {
-// 		console.error(error); // This will help you debug if there's an issue
-// 		res.status(500).json({ message: "Failed to get suggestions", error });
-// 	}
-// };
+		return res.status(500).json({ message: 'Failed to fetch suggestions' });
+	}
+};
 
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
 	const productId = req.params.id;
@@ -212,6 +211,7 @@ export const ProductController = {
 	getInactiveAndDraftProducts,
 	getProductById,
 	updateProduct,
+	getSearchSuggestions,
 	deleteProduct,
 	getRelatedProducts,
 	updateProductStatus

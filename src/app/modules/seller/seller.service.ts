@@ -35,9 +35,9 @@ export const SellerService = {
 			throw new Error('Brand slug already exists. Choose a different one.');
 		}
 
-		// 6️⃣ Set 30-day validity period from now
+		// 6️⃣ Set 7-day validity period from now
 		const validTill = new Date();
-		validTill.setDate(validTill.getDate() + 30);
+		validTill.setDate(validTill.getDate() + 7);
 
 		// 7️⃣ Create seller profile
 		const profile = await Seller.create({
@@ -61,11 +61,10 @@ export const SellerService = {
 	 */
 	extendSellerValidity: async (email: string, extraDays: number) => {
 		const seller = await Seller.findOne({ userEmail: email });
-		if (!seller) throw new Error('Seller not found');
+		if (!seller) throw new Error("Seller not found");
 
 		const now = new Date();
 
-		// If current validity is still active, extend from that date
 		const currentValidTill =
 			seller.validTill && new Date(seller.validTill) > now
 				? new Date(seller.validTill)
@@ -73,11 +72,17 @@ export const SellerService = {
 
 		currentValidTill.setDate(currentValidTill.getDate() + extraDays);
 
-		seller.validTill = currentValidTill;
-		await seller.save();
+		// ✅ Only update `validTill` field, avoid full document validation
+		await Seller.updateOne(
+			{ userEmail: email },
+			{ $set: { validTill: currentValidTill } }
+		);
 
-		return seller;
+		// Return the updated document (optional)
+		const updatedSeller = await Seller.findOne({ userEmail: email });
+		return updatedSeller;
 	},
+
 
 	getAllSellers: async () => {
 		return Seller.find({}).lean();
