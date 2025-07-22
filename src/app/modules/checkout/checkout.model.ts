@@ -11,7 +11,7 @@ export interface TCheckout {
 		name?: string;
 		color?: string;
 		size?: string;
-		productImage?: [];
+		productImage?: string[];
 	}>;
 	totalAmount: number;
 	shippingCost: number;
@@ -98,6 +98,34 @@ const checkoutSchema = new Schema<TCheckout>(
 	},
 	{ timestamps: true }
 );
+
+// Add JSON transform to clean ObjectId and Dates for API response
+checkoutSchema.set("toJSON", {
+	transform: (doc, ret) => {
+		// Convert _id to id and remove __v
+		ret.id = ret._id.toString();
+		delete ret._id;
+		delete ret.__v;
+
+		// Convert Dates to ISO strings
+		if (ret.orderDate instanceof Date) ret.orderDate = ret.orderDate.toISOString();
+		if (ret.createdAt instanceof Date) ret.createdAt = ret.createdAt.toISOString();
+		if (ret.updatedAt instanceof Date) ret.updatedAt = ret.updatedAt.toISOString();
+
+		// Clean _id inside items if present
+		if (Array.isArray(ret.items)) {
+			ret.items = ret.items.map((item) => {
+				if (item._id) {
+					item.id = item._id.toString();
+					delete item._id;
+				}
+				return item;
+			});
+		}
+
+		return ret;
+	},
+});
 
 const Checkout = model<TCheckout>("Checkout", checkoutSchema);
 

@@ -15,11 +15,10 @@ export type TProduct = {
 	specifications?: string;
 	additionalInfo?: string;
 
-
 	// Recommended Fields
 	slug: string;
 	discountPrice?: number;
-	SKU?: string; // SKU for variants
+	SKU?: string;
 	brand?: string;
 	tags?: string[];
 
@@ -27,10 +26,10 @@ export type TProduct = {
 	variants: Array<{
 		color: string;
 		size: string;
-		sku: string; // Unique SKU for each variant
+		sku: string;
 		price: number;
 		stock: number;
-		images: string[]; // Array of image URLs specific to this variant
+		images: string[];
 	}>;
 
 	// Images and Media
@@ -38,21 +37,25 @@ export type TProduct = {
 	videoUrl?: string;
 
 	// Reviews and Ratings
-	reviews: Types.ObjectId[]; // Array of Review IDs
+	reviews: Types.ObjectId[];
 	rating?: number;
 	totalReviews?: number;
-	type: "own" | "affiliate";
+
+	// Product Type
+	type: 'own' | 'affiliate';
 	affiliateLink?: string;
+
 	// Product Status & Labels
 	status?: 'active' | 'inactive' | 'draft';
 	isFeatured?: boolean;
 	isNewArrival?: boolean;
 
 	// Seller (Optional)
-	sellerId?: Types.ObjectId; // Reference to User model
+	sellerId?: Types.ObjectId;
 	sellerName?: string;
 	sellerEmail?: string;
 	sellerNumber: number;
+
 	// Optional Details
 	features?: string[];
 	notes?: string;
@@ -61,4 +64,19 @@ export type TProduct = {
 	weight?: number;
 	dimensions?: string;
 	warranty?: string;
+
+	// Deletion Info
+	deletedBy?: 'admin' | 'seller' | null;
+	isDeleted: boolean;
+
+	// ✅ Delivery Info (Updated)
+	deliveryCharges?: Array<{
+		division: string;
+		district: string;
+		charge: number;
+	}>;
+
+	defaultDeliveryCharge?: number;
+
+
 } & Document;

@@ -5,11 +5,7 @@ import { TProduct } from "./product.interface";
 import Product from "./product.model";
 import { sendEmail } from "../../utils/sendEmail";
 
-// const createProductIntoDb = async (productData: Partial<TProduct>) => {
-// 	const newProduct = new Product(productData);
-// 	await newProduct.save();
-// 	return newProduct;
-// };
+
 const createProductIntoDb = async (productData: Partial<TProduct>) => {
 	const newProduct = new Product(productData);
 	await newProduct.save();
@@ -35,7 +31,7 @@ const createProductIntoDb = async (productData: Partial<TProduct>) => {
 	}
 
 	// 🔔 Email to Admin
-	const adminEmail = "mdeasinsarkar1000@gmail.com"; // 📌 Set this in your .env
+	const adminEmail = 'mdeasinsarkar01@gmail.com';
 	if (adminEmail) {
 		const productName = newProduct?.name || 'a product';
 		const sellerName = newProduct?.sellerName || 'Unknown Seller';

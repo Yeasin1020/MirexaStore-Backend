@@ -7,13 +7,25 @@ import { TCheckout } from "./checkout.interface";
 import Checkout from "./checkout.model";
 
 const createOrder = async (orderData: TCheckout) => {
+	// Check stock BEFORE creating order to avoid partial order saves
+	for (const item of orderData.items) {
+		const product = await Product.findById(item.productId);
+		if (!product) {
+			throw new Error(`Product not found: ${item.productId}`);
+		}
+		if (product.stockQuantity < item.quantity) {
+			throw new Error(`Not enough stock for product: ${product.name}`);
+		}
+	}
+
+	// Create new order document
 	const order = new Checkout(orderData);
 
+	// Check if subscriber has first order discount available
 	const subscriber = await NewsletterSubscriber.findOne({
 		email: orderData.shippingDetails.email,
 	});
 
-	// ✅ First Order Discount Logic
 	if (subscriber?.isFirstOrderDiscountAvailable) {
 		const discount = order.totalPrice * 0.1;
 		order.totalPrice = parseFloat((order.totalPrice - discount).toFixed(2));
@@ -24,23 +36,31 @@ const createOrder = async (orderData: TCheckout) => {
 		await subscriber.save();
 	}
 
-	// ✅ Set the Shipping Cost (based on the city)
-	const shippingCost = orderData.shippingDetails.city === "Dhaka" ? 60 : 120;
-	order.shippingCost = shippingCost;
+	// Set shipping cost (use from frontend or default 0)
+	order.shippingCost = orderData.shippingCost || 0;
 
-	// ✅ Calculate Grand Total (Total Price + Shipping - Discount)
-	const grandTotal = order.totalPrice + order.shippingCost - (order.discountApplied || 0);
-	order.grandTotal = grandTotal;
+	// Calculate grand total: totalPrice + shippingCost - discountApplied
+	order.grandTotal = order.totalPrice + order.shippingCost - (order.discountApplied || 0);
 
-	// ✅ AdminBkash Initial Status
+	// Set adminBkashStatus if payment method is adminBkash
 	if (order.paymentMethod === "adminBkash") {
-		order["adminBkashStatus"] = "received"; // Set initial status
+		order.adminBkashStatus = "received"; // initial status
 	}
 
+	// Save the order
 	await order.save();
 
-	// ✅ Order ID (last 6 digits)
-	const orderId = `MIREXA-${order._id.toString().slice(-6)}`;
+	// Reduce stock quantity for each product AFTER order saved
+	for (const item of order.items) {
+		const product = await Product.findById(item.productId);
+		if (product) {
+			product.stockQuantity -= item.quantity;
+			await product.save();
+		}
+	}
+
+	// Generate order ID string from last 6 chars of _id
+	const orderId = `CN-${order._id.toString().slice(-6)}`;
 
 	const formattedItems: OrderItem[] = order.items.map((item) => ({
 		productId: item.productId,
@@ -48,20 +68,20 @@ const createOrder = async (orderData: TCheckout) => {
 		price: item.price,
 		sellerEmail: item.sellerEmail,
 		sellerName: item.sellerName,
-		name: item.name || 'N/A',
-		color: item.color || 'N/A',
-		size: item.size || 'N/A',
-		productImage: item.productImage || [], // ensure array even if empty
+		name: item.name || "N/A",
+		color: item.color || "N/A",
+		size: item.size || "N/A",
+		productImage: item.productImage || [],
 	}));
 
-	// ✅ Send Email After Saving Order
+	// Send order confirmation email
 	await sendOrderConfirmationEmail({
 		to: order.shippingDetails.email,
 		name: order.shippingDetails.fullName,
 		phone: order.shippingDetails.phone,
 		address: order.shippingDetails.address,
 		status: order.status,
-		deliveryNote: order?.shippingDetails?.deliveryNote,
+		deliveryNote: order.shippingDetails.deliveryNote,
 		country: order.shippingDetails.country,
 		district: order.shippingDetails.district,
 		city: order.shippingDetails.city,
@@ -73,22 +93,8 @@ const createOrder = async (orderData: TCheckout) => {
 		totalPrice: order.totalPrice,
 	});
 
-	// ✅ Reduce stock quantity for each ordered item
-	for (const item of order.items) {
-		const product = await Product.findById(item.productId);
-		if (product) {
-			// Check if enough stock is available
-			if (product.stockQuantity < item.quantity) {
-				throw new Error(`Not enough stock for product: ${product.name}`);
-			}
-
-			// Reduce stock
-			product.stockQuantity -= item.quantity;
-			await product.save();
-		}
-	}
-
-	return order;
+	// Return the cleaned JSON object (with id instead of _id)
+	return order.toJSON();
 };
 
 
