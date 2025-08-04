@@ -23,5 +23,5 @@ router.get('/slug/:slug', SellerController.getSellerBySlug);
 router.patch('/extend-validity/:email', authenticate, adminMiddleware, SellerController.extendSellerValidity);
 
 
-router.get('/all-sellers', authenticate, adminMiddleware, SellerController.getAllSellers)
+router.get('/all-sellers', SellerController.getAllSellers)
 export const SellerRoutes = router;
