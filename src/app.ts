@@ -1,52 +1,65 @@
-import cors from 'cors';
+import cors, { CorsOptions } from 'cors';
 import express, { Application, Request, Response } from 'express';
 import passport from 'passport';
 import session from 'express-session';
 import globalErrorHandler from './app/middlewares/globalErrorhandler';
 import notFound from './app/middlewares/notFound';
 import router from './app/routes';
-import config from './app/config'; // Assuming your config file contains sensitive info
-import './app/config/passport'; // ✅ Make sure Google Strategy is initialized here
+import config from './app/config'; // Your sensitive config
+import './app/config/passport'; // Google Strategy
 
 const app: Application = express();
 
-// CORS Configuration
-const corsOptions = {
-  origin: '*',
+// Allowed frontend origins
+const allowedOrigins = [
+  'https://mirexastore.com',
+  'https://www.mirexastore.com',
+  'https://api.mirexastore.com',
+];
+
+const corsOptions: CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 };
 
 app.use(cors(corsOptions));
-// Body parser
 app.use(express.json());
 
-// Session Configuration
+// Session configuration
 app.use(
   session({
-    secret: config.session_secret || 'your-fallback-secret', // Use a strong session secret from .env
+    secret: config.session_secret || 'your-fallback-secret',
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: config.NODE_ENV === 'production', // Cookies should be secure in production (HTTPS)
-      httpOnly: true, // Prevent client-side JS access
+      secure: config.NODE_ENV === 'production', // HTTPS only
+      httpOnly: true,
       maxAge: 60 * 60 * 1000, // 1 hour
+      sameSite: 'none', // ✅ required for cross-origin cookies
     },
   })
 );
 
-// Passport Middleware
-app.use(passport.initialize()); // Initialize Passport for authentication
-app.use(passport.session()); // Use Passport session to store user info
+// Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Routes
 app.use('/api', router);
 
-// Home route for checking if the server is up
+// Health check
 app.get('/', (req: Request, res: Response) => {
   res.send('🚀 Deployment successful!');
 });
 
-// Error Handlers
+// Error handlers
 app.use(globalErrorHandler);
 app.use(notFound);
 
