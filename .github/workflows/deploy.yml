@@ -32,7 +32,6 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-
           script: |
             echo "👉 Navigating to backend directory..."
             cd /www/wwwroot/backend/MirexaStoreBackend
@@ -40,6 +39,11 @@ jobs:
             echo "👉 Pulling latest changes from Git..."
             /usr/bin/git pull origin main
 
+            echo "👉 Installing dependencies on the server..."
+            npm install --production
+
             echo "👉 Restarting backend with PM2..."
-            /home/yeasin_sarkar/.nvm/versions/node/v22.18.0/bin/pm2 restart MirexaStoreBackend || \
-            /home/yeasin_sarkar/.nvm/versions/node/v22.18.0/bin/pm2 start dist/server.js --name "MirexaStoreBackend"
+            # Check if PM2 process exists before trying to restart.
+            /home/yeasin_sarkar/.nvm/versions/node/v22.18.0/bin/pm2 describe mirexa-backend > /dev/null \
+            && /home/yeasin_sarkar/.nvm/versions/node/v22.18.0/bin/pm2 restart mirexa-backend \
+            || /home/yeasin_sarkar/.nvm/versions/node/v22.18.0/bin/pm2 start dist/server.js --name "mirexa-backend"
