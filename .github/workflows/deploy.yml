@@ -1,5 +1,3 @@
-# .github/workflows/deploy.yml
-
 name: Deploy Backend to VPS
 
 on:
@@ -12,25 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout repository
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # Step 4: Build project
       - name: Build project
         run: npm run build
 
-      # Step 5: Deploy to VPS
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -42,12 +35,15 @@ jobs:
             echo "👉 Navigating to backend directory..."
             cd /www/wwwroot/backend/MirexaStoreBackend
 
-            echo "👉 Pulling latest changes from Git..."
+            echo "👉 Resetting repo..."
             git reset --hard
             git pull origin main
 
-            echo "👉 Installing production dependencies..."
-            npm install --omit=dev
+            echo "👉 Installing all dependencies..."
+            npm install
+
+            echo "👉 Building project on VPS..."
+            npm run build
 
             echo "👉 Restarting backend with PM2..."
             /home/yeasin_sarkar/.nvm/versions/node/v22.18.0/bin/pm2 describe mirexa-backend > /dev/null \
