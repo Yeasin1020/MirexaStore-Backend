@@ -1,5 +1,4 @@
-# This workflow is designed to automatically deploy your Node.js backend
-# to a VPS. It's triggered whenever you push new code to the `main` branch.
+# .github/workflows/deploy.yml
 
 name: Deploy Backend to VPS
 
@@ -17,33 +16,40 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Install dependencies
+      # Step 2: Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # Step 3: Build project
+      # Step 4: Build project
       - name: Build project
         run: npm run build
 
-      # Step 4: Deploy to VPS
+      # Step 5: Deploy to VPS
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
           script: |
             echo "👉 Navigating to backend directory..."
             cd /www/wwwroot/backend/MirexaStoreBackend
 
             echo "👉 Pulling latest changes from Git..."
-            /usr/bin/git pull origin main
+            git reset --hard
+            git pull origin main
 
-            echo "👉 Installing dependencies on the server..."
-            npm install --production
+            echo "👉 Installing production dependencies..."
+            npm install --omit=dev
 
             echo "👉 Restarting backend with PM2..."
-            # Check if PM2 process exists before trying to restart.
             /home/yeasin_sarkar/.nvm/versions/node/v22.18.0/bin/pm2 describe mirexa-backend > /dev/null \
             && /home/yeasin_sarkar/.nvm/versions/node/v22.18.0/bin/pm2 restart mirexa-backend \
             || /home/yeasin_sarkar/.nvm/versions/node/v22.18.0/bin/pm2 start dist/server.js --name "mirexa-backend"
