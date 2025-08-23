@@ -56,7 +56,7 @@ app.use('/api', router);
 
 // Health check
 app.get('/', (req: Request, res: Response) => {
-  res.send('🚀 Deployment Successfullyaaaaaaa Doneeee!');
+  res.send('🚀 Deployment Successful!');
 });
 
 // Error handlers
