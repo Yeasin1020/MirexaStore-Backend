@@ -5,7 +5,7 @@ import adminMiddleware from '../../middlewares/adminAuthorization';
 
 const router = express.Router();
 
-router.post('/', authenticate, adminMiddleware, CategoryController.createCategory);
+router.post('/', CategoryController.createCategory);
 router.get('/', CategoryController.getAllCategories);
 router.get('/:slug', CategoryController.getCategoryBySlug);
 router.delete('/:id', authenticate, adminMiddleware, CategoryController.deleteCategory);
